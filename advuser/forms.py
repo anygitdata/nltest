@@ -219,12 +219,49 @@ class UpdStatus_userForm(forms.Form):
 
         cd_clean = self.cleaned_data;
 
+        levelperm = cd_clean['status'].levelperm
         user_head = getUser(arg_user)
         user_modf = getUser(arg_session['upd_username'])
         
 
         res_proc = Res_proc()
         
+        def get_limitcon()->dict:
+            """ Данные по параметру limitcon """
+            from .models import AdvUser
+            from app.models import spr_fields_models as fields
+
+            nonlocal user_head, cd_clean, levelperm
+
+            dc_switch = {
+                30:'limitcon',
+                40:'limitcon40',
+                70:'limitcon70'
+                }
+
+            res = Res_proc();
+
+            if levelperm < 30:  # Никакой проверки не требуется
+                res.res = True
+            
+            rec = AdvUser.objects.filter(parentuser=user_head.username);
+            numuser = rec.count()
+            
+            limitcon = 0
+            if numuser > 0:
+                row = fields.objects.filter(id_key=levelperm)
+                if row.exists():
+                    row.first()
+                    dc_data = json.loads(row.js_data['fields_model'])
+                    switch (levelperm)
+                    s_key = dc_switch[levelperm]
+                    limitcon = dc_data[s_key]
+            res_dc = dict(limitcon=limitcon, numuser=numuser)
+            res.res_dict = res_dc
+
+            return res
+
+
         def get_dataHeader():
             """ Данные Head: statusData and numCount limitcon """
             from app.models import spr_fields_models as fields
@@ -243,7 +280,7 @@ class UpdStatus_userForm(forms.Form):
                 res.mes = 'Нет прав на редактирование профиля'
                 return res
 
-            levelperm = cd_clean['status'].levelperm
+            
             if abs(type_status_modf.levelperm - levelperm) > 1:
                 res.mes = 'Повышение статуса более чем на один порядок не допускается'
                 return res
