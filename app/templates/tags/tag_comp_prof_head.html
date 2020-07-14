@@ -1,0 +1,13 @@
+﻿<div class="row" style="font-size: 0.8rem; margin-top:-1rem; ">
+        {% for item in prof %}
+            <div class="w-100 row">
+                {% if item.idrow == 'parentData' %}
+                    <div class="offset-md-2 col-6 mt-1 border-bottom border-info"></div>
+                {%endif%}
+
+                <div class="col-5 text-right pr-2"> {{item.str}} </div>
+                <div class="col-7"> {{item.val}} </div>
+            </div>
+        {%endfor%}
+
+</div>

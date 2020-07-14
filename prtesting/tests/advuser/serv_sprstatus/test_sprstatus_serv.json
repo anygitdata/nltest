@@ -1,0 +1,31 @@
+[
+  {
+    "test": "tests.advuser.test_serv_sprstatus.test_getStatus_or_None",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul procedure: serv_sprstatus "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_sprstatus.test_get_permModf_prof",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul procedure: serv_sprstatus "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_serv_sprstatus.test_simpl_proc",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul procedure: serv_sprstatus "
+    }
+  }
+
+]

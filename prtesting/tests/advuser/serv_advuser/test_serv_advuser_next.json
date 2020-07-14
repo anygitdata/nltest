@@ -1,0 +1,31 @@
+[
+  {
+    "test": "tests.advuser.test_serv_advuser.test_spr_status",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование advuser_sprstatus "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_profil_user_for_teg",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser данные профПользователя "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_profil_user",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser данные профПользователя "
+    }
+  }
+
+]

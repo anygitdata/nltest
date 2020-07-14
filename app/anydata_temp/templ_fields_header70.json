@@ -1,0 +1,11 @@
+{
+  "info": "Структура модели advdata статус headerexp",
+  "fields_model": {
+    "idcomp": "empty",
+    "logincl": "empty",
+    "pswcl": "empty",
+    "limitcon": 20,
+    "limitcon40": 5,
+    "limitcon70": 0
+  }
+}

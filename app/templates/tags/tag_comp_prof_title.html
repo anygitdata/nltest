@@ -1,0 +1,23 @@
+﻿{% load static %}
+
+
+
+{# -------------- Шапка профиля с анкетными данными -------------- #}
+    {# prof[param] -> imgphoto , full_name, status, idcomp #}
+    <div class="row">
+           <div class="row justify-content-end col-3 pl-0" style="min-width:150px;">
+                <img class="img-fluid img-thumbnail" src="{% static param.imgphoto %}" />
+           </div>
+            <div class="col-9 row justify-content-start ml-2 text-left">
+                <div class="col-8 font-weight-bold" style="font-size:1.2rem">{{param.full_name}}</div>
+                <div class="w-100 row justify-content-start">
+                    <div class="col-xl-3 col-4 text-right">Статус:</div>
+                    <div class="col-auto pl-0 ml-0 font-weight-bold">{{param.status}}</div>                                       
+                </div>
+                <div class="w-100 row justify-content-start">
+                    <div class="col-xl-3 col-4 text-right">ID компании:</div>
+                    <div class="col-auto pl-0 ml-0 text-left font-weight-bold">{{param.idcomp}}</div>
+                </div>
+            </div>
+        <div class="offset-lg-1 offset-md-0  mt-2 col-9 border border-info"></div>
+    </div>

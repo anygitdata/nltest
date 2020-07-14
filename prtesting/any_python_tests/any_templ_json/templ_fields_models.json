@@ -1,0 +1,59 @@
+{
+
+  {
+    "info": "Структура модели User",
+    "fields_model": {
+      "full_name": "empty",
+      "username": "empty",
+      "first_name": "empty",
+      "last_name": "empty",
+      "email": "empty",
+      "is_active": "empty",
+      "user_id": "empty"
+    },
+    "init_quest": [ "username", "password" ],
+    "fields_quest": {
+      "username": "logincl",
+      "first_name": "Гостевой",
+      "last_name": "вход",
+      "email": "",
+      "is_active": 1,
+      "password": "password_cl"
+    }
+  },
+  {
+    "info": "Структура модели advuser",
+    "fields_model": {
+      "advData": "empty",
+      "phone": "empty",
+      "status": "empty",
+      "status_id": "empty",
+      "sendMes": "empty",
+      "ageGroup": "empty",
+      "parentuser": "empty",
+      "post": "empty",
+      "pol": "empty"
+    },
+    "info_quest": "Структура гостВхода",
+    "init_quest": [ "status", "status_id", "parentuser" ],
+    "fields_quest": {
+      "status": "qust-simp",
+      "status_id": "qust-simp",
+      "sendMes": "false",
+      "parentuser": "username",
+      "pol": "-"
+    }
+  },
+
+  {
+    "info": "Структура модели advdata статус qust_simp",
+    "init_quest": [ "pswcl" ],
+    "fields_quest": {
+      "pswcl": "pswcl"
+    },
+      "fields_model": {
+        "pswcl": "empty"
+      }
+    }
+
+  }

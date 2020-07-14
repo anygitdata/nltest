@@ -1,0 +1,16 @@
+{
+  "status": "subheader",
+  "username": "subheader2",
+  "password": "sub2",
+  "password1": "sub2",
+  "first_name": "Имя_sub2",
+  "last_name": "Фамилия_sub2",
+  "email": "test-sub2.testt@mail.ru",
+  "idcomp": "038-sub2",
+  "parentuser": "podg-vl",
+  "sendMes": "true",
+  "ageGroup": 60,
+  "phone": 928954,
+  "post": 347922,
+  "pol": "М"
+}

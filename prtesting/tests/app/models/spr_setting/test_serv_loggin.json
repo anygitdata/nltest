@@ -1,0 +1,22 @@
+[
+  {
+    "test": "tests.app.test_app_models.read_logginParam",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "",
+      "info": " Тест class serv_loggin обработка файлов логгирования "
+    }
+  },
+
+  {
+    "test": "tests.app.test_app_models.get_actual_logginFile",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "",
+      "info": " Тест class serv_loggin обработка файлов логгирования "
+    }
+  }
+
+]

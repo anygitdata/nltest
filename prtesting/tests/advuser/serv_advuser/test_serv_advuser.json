@@ -1,0 +1,123 @@
+[
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_val_from_advData",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_parentuser",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_dataCons",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_dataHeader",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_verify_yourHead",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_subRows_head",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_dataUser",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_dataUser "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_advData",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_advData "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_modf_dict_by_setting_def",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_modf_dict_by_setting_def "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_advUser_header",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_advUser_header "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_user_head",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_user_head "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_head_user",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: get_head_user "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_serv_advuser.test_get_user_cons",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: get_user_cons "
+    }
+  }
+]

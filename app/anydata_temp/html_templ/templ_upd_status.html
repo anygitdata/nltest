@@ -1,0 +1,98 @@
+<div class="row">
+
+            <div class="mb-2" style="font-size:0.8rem;">
+                <h6>Данные пользователя</h6>
+                <div>Логин: <span style="font-weight:600"> (basam) Владимир Басамыгин </span> </div>
+                <div>Статус: <span style="font-weight:600"> Участник проекта </span> </div>
+            </div>
+
+            <div class="mb-2 row" style="font-size:0.8rem;">
+                <div class="" style="font-weight:500">Допускается повышение или понижение статуса ТОЛЬКО на один уровень. </div>
+                <ul class="ml-2" style="font-size:0.8rem;">
+                    <li>Чтобы обновить статус до рукГруппы, участнику проекта желательно освоиться в качестве менеджера</li>
+                    <li>Чтобы обновить статус до рукГруппы с макс. правами, участнику проекта необходимо освоиться в качестве рукГруппы</li>
+                    <li>Понижение статуса автоматически переподчиняет всю структуру на рукПроекта. Данные не восстанавливаются </li>
+                </ul>
+            </div>
+
+            
+
+            <div class="row col-12 mt-2 status">
+
+
+                <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
+                    Статус
+                </div>
+
+                <div col-auto="" id="status">
+                    <select name="status" class="form-control" required="" id="id_status">
+                      <option value="">--- Выберите статус ---</option>
+
+                      <option value="qust-regs">Пользователь проекта</option>
+                      <option value="proj-memb" selected="">Участник проекта</option>
+                      <option value="subheader">Руководитель группы</option>
+                      <option value="headerexp">Руководитель максПрава</option>
+                    </select>
+                </div>
+            </div>
+
+            
+
+            <div class="row col-12 mt-2 limitcon">
+
+
+                <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
+                    Лимит подкл.
+                </div>
+
+                <div col-auto="" id="limitcon">
+                    <input type="text" name="limitcon" value="0" class="form-control" placeholder="Лимит подключений" id="id_limitcon">
+                </div>
+                
+                <div class="col-9 ml-4 text-right"> Ограничение на подключение клиентов</div>
+                
+
+            </div>
+
+            
+
+            <div class="row col-12 mt-2 limitcon40">
+
+
+                <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
+                    Лимит подкл. рукГрупп
+                </div>
+
+                <div col-auto="" id="limitcon40">
+                    <input type="text" name="limitcon40" class="form-control" placeholder="Лимит подкл. рукГрупп" id="id_limitcon40">
+                </div>
+                
+
+            </div>
+
+            
+
+            <div class="row col-12 mt-2 limitcon70">
+
+
+                <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
+                    Лимит подкл. супер-РукГр
+                </div>
+
+                <div col-auto="" id="limitcon70">
+                    <input type="text" name="limitcon70" class="form-control" placeholder="Лимит супер-РукГр" id="id_limitcon70">
+                </div>
+                
+
+            </div>
+
+            
+
+
+            <div class="row justify-content-center col-8 mt-5 mb-3">
+                <div class="col-2">
+                    <input class="btn btn-info" type="submit" value="Сохранить">
+                </div>
+            </div>
+
+        </div>

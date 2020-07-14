@@ -1,0 +1,119 @@
+
+{% extends 'layout/mes_layout.html' %}
+
+{% block main %}
+
+<div class="container-fluid">
+        
+    <h2 class="mt-3">Страница тестирования</h2>
+    <span class="" style="display:block; font-size:0.8rem; margin:-15px auto 20px 0;">path as default: prtesting/jsonTest/scr_anyuser разделитель path "/" (не заполнять .json) </span>
+
+    <div class="row align-items-start" >
+
+    {% if res == -1000 %}
+        <p>Глобальная ошибка модуля тестирования: </p>
+        <p> {{error}} </p>
+
+    {% elif res == -222 %}
+        <div class="ml-2">
+        <p class="mb-0 pb-0">Глобальная ошибка процедуры тестирования: </p>
+        <p class="text-danger pt-0 mt-0 mb-5 " >{{error}} </p>
+        </div>
+
+    {% else %}    
+        
+        {# Заголовок с ошибками #}
+        {% if res < 0 %}
+            <h4 class="ml-3 text-danger">{{error}}</h4>
+        <div class="w-100" ></div>
+        {% endif %}
+
+        <div class="row col-3 align-items-start" style="font-size:0.8rem ">
+            <form method="post" class="w-100" >
+                {% csrf_token %}
+        
+                    {% for field in form.visible_fields %}
+                            <div class="col-auto" style="line-height:20px;">
+                                {{field.label}}
+                            </div>
+                        <div class="w-100"></div>
+                            <div class="w-100">
+                                {{field}}
+                            </div>
+
+                    {% endfor %}
+
+                    {# Список файлов тестирования #}
+                    {% if files %}
+                        <h6>Файлы теста</h6>
+                        <ul>
+                            {% for file in files %}
+                                <li>{{file}}</li>
+                            {% endfor %}
+                        </ul>                        
+
+                    {% endif %}
+
+                    <div class="row justify-content-center col-8 my-3">
+                        <div class="col-2">
+                            <input class="btn btn-info px-4 py-0" type="submit" value="Тест" />
+                        </div>
+                    </div>
+            </form>
+        </div>
+
+        <div class="row col-9 align-items-start">
+            <div class="col-5 align-self-start" style="font-size:0.8rem" >
+                Блок результатов теста
+            </div>
+            
+            {# Отображение результата тестирования #}
+            {% if res == 200 %}
+            <style>
+                hr {
+                    border: none; /* Убираем границу */
+                    background-color: red; /* Цвет линии */
+                    color: #808080; /* Цвет линии для IE6-7 */
+                    height: 2px; /* Толщина линии */
+                    width: 100%
+                   }
+            </style>
+
+                {# Вывод входящих данных по тестированию #}
+                <div class="col-12" style="font-size:0.8rem">
+                    {% for item in res_test %} 
+                        <div class="row col-auto">
+
+                            {% if item.empty_data %}
+                            {# Отобразить специальное сообщение #}
+                                <div class="col-auto">
+                                    {{item.empty_data}}
+                                </div>
+
+                            {%else%}
+                                <div class="col-auto" >
+                                   Тест: {{item.name_proc}} <b>арумент: {{item.args}} </b> <br />
+
+                                {# Отображение ошибки тестирования #}
+                                   {% if item.error %}
+                                      <span style="color: red">{{item.error}} </span> <br />
+                                   {% else %}
+                                      {# Данные теста #}
+                                      <span class="font-weight-bold">{{item.res_proc}}</span> <br />
+
+                                   {% endif %}
+                                </div>
+                            {%endif%}
+                            <hr />
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+{%endif%}
+
+{% endblock %}

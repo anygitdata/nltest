@@ -1,0 +1,9 @@
+{
+  "info": "Каталог для проведения тестов приложения app",
+  "details": "",
+  "path": {
+    "directory": "",
+    "files": [ "test_sprstatus_serv" ]
+  }
+
+}

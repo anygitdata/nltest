@@ -1,0 +1,205 @@
+{% load static %}
+{% load ext_data_user %}
+
+<!DOCTYPE html>
+
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>{%block title%}Твой путь{%endblock%}</title>
+
+    <link href="{% static 'app/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{% static 'app/css/fontAwesome/css/font-awesome.min.css' %}">
+    <link href="{% static 'app/css/jquery-ui-1.10.3.min.css' %}" rel="stylesheet" type="text/css" />
+
+
+    <style>
+
+        html, body {
+            height: 100%;
+        }
+
+
+        @media (min-width:576px) {
+            html {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            html {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (min-width: 992px) {
+            html {
+                font-size: 1.6rem;
+            }
+        }
+
+        .banner {
+            height: 150px;
+            /*width: 100%;*/
+            background-color: #c6f5c4
+        }
+
+        .main {
+        }
+
+        .footer {
+            min-height: 5rem;
+            background-color: #808080;
+            color: white;
+            font-size: 0.8rem
+        }
+    </style>
+
+
+</head>
+<body>
+
+    <div id="any_message_system" title="Сообщение">
+        Текстовое сообщение
+    </div>
+
+
+    <div class="d-flex flex-column h-100 wrapper" style="min-width:400px !important">
+
+
+        <header class="header">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-info">
+                <a class="navbar-brand" href="{% url 'mainapp' %}"> <img src="{% static 'app/img/NLtitle.png' %}" /> </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav text-uppercase">
+                        <a class="nav-item nav-link active" href="{% url 'mainapp' %}">Главная <span class="sr-only">(current)</span></a>
+                        <a class="nav-item nav-link" href="#">Контакты</a>
+                        <a class="nav-item nav-link" href="{% url 'profile'%}">Профиль</a>
+
+                        <a class="nav-item nav-link" href="#">О нас</a>
+                        <a class="nav-item nav-link" href="#">Вопросы</a>
+                        {% head_panel user %}
+
+                        {% if user %}
+                            {% if user.is_superuser %}
+                            <a class="nav-item nav-link" href="{% url 'prtest' %}">Тесты</a>
+                            {% endif %}
+
+                            <a class="nav-item nav-link" href="{% url 'logout' %}">Выход</a>
+                        {%else%}
+                            <a class="nav-item nav-link" href="{% url 'login' %}">Вход</a>
+                        {%endif%}
+
+
+                    </div>
+                </div>
+            </nav>
+
+
+            <div class="banner">
+                <div class="container-fluid h-100">
+
+                    <div class="row align-items-end justify-content-end h-100">
+                        <div class="col-3 text-right">
+                            {% user_data user %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </header>
+
+        {# Основной контент по центру с отступами по горизонтали 0,25% #}
+        <div class="flex-grow-1 main mx-3 mt-2 mb-2" style="width:95%;">
+
+
+            {% block main %}
+            {% block header %} <h1>Главная страница</h1> {% endblock  %}
+
+            {% endblock main %}
+
+        </div>
+
+
+        <div class="flex-grow-0 footer">
+            <div class="container-fluid h-100">
+                <div class="row align-items-center h-100">
+                    <div class="col-2 text-center">
+                        ® Проект 2020 г <br />
+                        Найти себя
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-4">
+                        <div class="row justify-content-end">
+                            {% header_data %}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row justify-content-end mr-3">
+                            {% cons_data user %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <script src="{% static 'app/js/jquery_12.min.js' %}"></script>
+    <script src="{% static 'app/js/popper.min.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'app/js/jquery-ui-1.10.3.min.js' %}"></script>
+
+
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+
+                $('#any_message_system').dialog({
+                    title: 'Специальное сообщение',
+                    buttons: [{ text: "OK", click: function () { $(this).dialog("close") } }],
+                    modal: true,
+                    position: { my: 'left top', at: 'left top' },
+                    autoOpen: false
+                });
+
+                data = { type_mes: 'system_send_mes' }
+                // Открыть модальное окно
+                $.ajax({
+                    url: "{% url 'sendspecialmes' %}",
+                    data: data,
+                    type: 'get',
+                    dataType: 'json',
+                    success: function (data) {
+
+                        if (data.res == 'empty') return;
+
+
+                        val_dialog = $('#any_message_system')
+                        val_dialog.dialog({ title: data.title })
+                        val_dialog.html(data.mes)
+                        val_dialog.dialog('open')
+
+                    }
+                });        
+        
+
+            });
+        })(jQuery);
+    </script>
+
+
+    {% block scripts %}
+           
+    {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+
+{% extends 'layout/mes_layout.html' %}
+{% load static %}
+
+
+{% block main %}
+
+<div class="pt-5 " >
+
+<div class="container font-weight-bold" >
+	
+	<div class="row ml-4" >		
+		<div class="offset-md-1 col-2  pr-2 pt-0">
+			<img style="width:130px" src="{% static 'app/img/keylogin.png' %}" />
+		</div>
+
+		<div class="col-auto ml-2 pt-4" style="height:150px">
+			<h2>Вход</h2>
+		</div>
+	</div>
+
+	{% if user.is_authenticated %}
+	<p>Вы уже выполнили вход</p>
+		<br />
+		<a href="{% url 'maindata' %}">Вход на главную страницу</a>
+{% else %}
+
+
+	
+
+<form method="post">
+
+    {% csrf_token %}
+	    
+	<div class="col-10 row">
+		<div class="col-3 pr-2 pt-2 text-right"> Логин:</div>
+		<div class="col-auto">
+			<input placeholder="Логин" class="form-control" type="text" name="username" autofocus="" required="" id="id_username">
+		</div>
+	</div>
+
+	<div class="col-10 row mt-2">
+		<div class="col-3 pr-2 pt-2 text-right">Пароль:</div>
+		<div class="col-auto">
+			<input placeholder="Пароль" class="form-control" type="password" name="password" required="" id="id_password">
+		</div>
+	</div>
+
+	<div class="col-10 offset-md-3 mt-3">
+		<input type="hidden" name="next" value="{{next}}" />
+		<input type="submit" class="submit btn btn-primary px-4 py-1"  value="Вход" />
+
+	</div>
+
+	{% if 1 > 2 %}
+	<div class="col-10 mt-4 " >
+		<a class="text-info font-weight-normal" href="{% url 'password_reset' %}">Сброс пароля</a>
+	</div>
+	{% endif %}
+
+
+</form>
+
+</div>
+
+{% endif %}
+
+
+</div>
+
+{% endblock main %}
+

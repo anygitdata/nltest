@@ -1,0 +1,358 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <Name>nltest</Name>
+    <RootNamespace>nltest</RootNamespace>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>e40d8f6d-8255-4674-a6a4-9943f2377b07</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <ProjectTypeGuids>{5F0BE9CA-D677-4A4D-8806-6076C0FAAD37};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <StartupFile>manage.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <LaunchProvider>Django launcher</LaunchProvider>
+    <DjangoSettingsModule>nltest.settings</DjangoSettingsModule>
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
+    <OutputPath>.</OutputPath>
+    <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="advuser\admin.py" />
+    <Compile Include="advuser\apps.py" />
+    <Compile Include="advuser\forms.py" />
+    <Compile Include="advuser\models.py" />
+    <Compile Include="advuser\modify_models.py" />
+    <Compile Include="advuser\modify_serv.py" />
+    <Compile Include="advuser\serv_advuser.py" />
+    <Compile Include="advuser\serv_sprstatus.py" />
+    <Compile Include="advuser\serv_typestatus.py" />
+    <Compile Include="advuser\tests.py" />
+    <Compile Include="advuser\urls.py" />
+    <Compile Include="advuser\views.py" />
+    <Compile Include="advuser\__init__.py" />
+    <Compile Include="app\admin.py" />
+    <Compile Include="app\apps.py" />
+    <Compile Include="app\com_data\any_mixin.py" />
+    <Compile Include="app\com_data\Ext_dict.py" />
+    <Compile Include="app\com_data\files.py" />
+    <Compile Include="app\com_data\proc_send_email.py" />
+    <Compile Include="app\com_data\spr_setting_serv.py" />
+    <Compile Include="app\com_data\type_error.py" />
+    <Compile Include="app\com_data\type_value.py" />
+    <Compile Include="app\com_data\user_except.py" />
+    <Compile Include="app\com_data\write_exception_into_log.py" />
+    <Compile Include="app\com_data\__init__.py" />
+    <Compile Include="app\com_serv_dbase\load_user_into_dbase.py" />
+    <Compile Include="app\com_serv_dbase\serv_modf_profil.py" />
+    <Compile Include="app\models.py" />
+    <Compile Include="app\templatetags\comp_templ.py" />
+    <Compile Include="app\templatetags\ext_data_user.py" />
+    <Compile Include="app\templatetags\__init__.py" />
+    <Compile Include="app\tests.py" />
+    <Compile Include="app\urls.py" />
+    <Compile Include="app\use_mysql\conn_utils.py" />
+    <Compile Include="app\use_mysql\use_mysql.py" />
+    <Compile Include="app\views.py" />
+    <Compile Include="app\__init__.py" />
+    <Compile Include="manage.py" />
+    <Compile Include="nltest\__init__.py" />
+    <Compile Include="nltest\settings.py" />
+    <Compile Include="nltest\urls.py" />
+    <Compile Include="nltest\wsgi.py" />
+    <Compile Include="prtesting\admin.py" />
+    <Compile Include="prtesting\any_mixin.py" />
+    <Compile Include="prtesting\any_python_tests\conn_utils.py" />
+    <Compile Include="prtesting\any_python_tests\mixin_python_3.7.py" />
+    <Compile Include="prtesting\any_python_tests\use_mysql.py" />
+    <Compile Include="prtesting\apps.py" />
+    <Compile Include="prtesting\forms.py" />
+    <Compile Include="prtesting\migrations\__init__.py" />
+    <Compile Include="prtesting\models.py" />
+    <Compile Include="prtesting\tests\advuser\test_modl_serv_sprstatus.py" />
+    <Compile Include="prtesting\tests\advuser\test_serv_advuser.py" />
+    <Compile Include="prtesting\tests\advuser\test_serv_proc.py" />
+    <Compile Include="prtesting\tests\advuser\test_serv_sprstatus.py" />
+    <Compile Include="prtesting\tests\app\test_com_data.py" />
+    <Compile Include="prtesting\tests\__init__.py" />
+    <Compile Include="prtesting\views.py" />
+    <Compile Include="prtesting\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="advuser\arg_add_proj_quest.json" />
+    <Content Include="advuser\arg_RegisterIns_profForm_member.json" />
+    <Content Include="advuser\arg_RegisterIns_profForm_subheader.json" />
+    <Content Include="advuser\templates\advuser\confirm_befor_del_prof.html" />
+    <Content Include="advuser\templates\advuser\contact.html" />
+    <Content Include="advuser\templates\advuser\header_panel.html" />
+    <Content Include="advuser\templates\advuser\index.html" />
+    <Content Include="advuser\templates\advuser\profile_user.html" />
+    <Content Include="advuser\templates\advuser\prof_conf_modf.html" />
+    <Content Include="advuser\templates\advuser\prof_quest.html" />
+    <Content Include="advuser\templates\advuser\prof_table_format.html" />
+    <Content Include="advuser\templates\advuser\regUser.html" />
+    <Content Include="advuser\templates\advuser\upd_status_user.html" />
+    <Content Include="advuser\templates\advuser\regUser_ext.html" />
+    <Content Include="advuser\templates\advuser\regUser_ext_copy.html" />
+    <Content Include="advuser\templates\advuser\upd_password_by_user.html" />
+    <Content Include="advuser\templates\advuser\upd_password_user.html" />
+    <Content Include="advuser\СтруктСвязей.txt" />
+    <Content Include="app\anydata_temp\html_templ\templ_upd_status.html" />
+    <Content Include="app\anydata_temp\templ_fields_header70.json" />
+    <Content Include="app\com_data\__pycache__\any_mixin.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\Ext_dict.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\files.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\proc_send_email.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\spr_setting_serv.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\type_error.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\type_value.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\user_except.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\write_exception_into_log.cpython-37.pyc" />
+    <Content Include="app\com_data\__pycache__\__init__.cpython-37.pyc" />
+    <Content Include="app\com_serv_dbase\__pycache__\load_user_into_dbase.cpython-37.pyc" />
+    <Content Include="app\com_serv_dbase\__pycache__\serv_modf_profil.cpython-37.pyc" />
+    <Content Include="app\loggin\log_2020-5-19_154319.log" />
+    <Content Include="app\loggin\log_2020-5-19_172825.log" />
+    <Content Include="app\loggin\log_2020-5-22_04138.log" />
+    <Content Include="app\loggin\log_2020-6-15_14120.log" />
+    <Content Include="app\loggin\log_2020-6-15_20173.log" />
+    <Content Include="app\static\app\anyjs\upd_status_user_01.js" />
+    <Content Include="app\static\app\css\bootstrap.min.css" />
+    <Content Include="app\static\app\css\bootstrap.min.css.map" />
+    <Content Include="app\static\app\css\fontAwesome\css\font-awesome.css" />
+    <Content Include="app\static\app\css\fontAwesome\css\font-awesome.min.css" />
+    <Content Include="app\static\app\css\fontAwesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="app\static\app\css\fontAwesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="app\static\app\css\fontAwesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="app\static\app\css\fontAwesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="app\static\app\css\fontAwesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="app\static\app\css\fontAwesome\fonts\FontAwesome.otf" />
+    <Content Include="app\static\app\css\images\animated-overlay.gif" />
+    <Content Include="app\static\app\css\images\ui-bg_diagonals-medium_20_d34d17_40x40.png" />
+    <Content Include="app\static\app\css\images\ui-bg_flat_30_cccccc_40x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_flat_50_5c5c5c_40x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_gloss-wave_45_817865_500x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_gloss-wave_60_fece2f_500x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_gloss-wave_70_ffdd57_500x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_gloss-wave_90_fff9e5_500x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_highlight-soft_100_feeebd_1x100.png" />
+    <Content Include="app\static\app\css\images\ui-bg_inset-soft_30_ffffff_1x100.png" />
+    <Content Include="app\static\app\css\images\ui-icons_3d3d3d_256x240.png" />
+    <Content Include="app\static\app\css\images\ui-icons_bd7b00_256x240.png" />
+    <Content Include="app\static\app\css\images\ui-icons_d19405_256x240.png" />
+    <Content Include="app\static\app\css\images\ui-icons_eb990f_256x240.png" />
+    <Content Include="app\static\app\css\images\ui-icons_ed9f26_256x240.png" />
+    <Content Include="app\static\app\css\images\ui-icons_fadc7a_256x240.png" />
+    <Content Include="app\static\app\css\images\ui-icons_ffe180_256x240.png" />
+    <Content Include="app\static\app\css\jquery-ui-1.10.3.min.css" />
+    <Content Include="app\static\app\css\jquery-ui.min.css" />
+    <Content Include="app\static\app\imginstr\instr_navpan.png" />
+    <Content Include="app\static\app\imgUser\basam.png" />
+    <Content Include="app\static\app\imgUser\colch.png" />
+    <Content Include="app\static\app\imgUser\empty.png" />
+    <Content Include="app\static\app\imgUser\kkvul.png" />
+    <Content Include="app\static\app\imgUser\lolga.png" />
+    <Content Include="app\static\app\imgUser\moroz.png" />
+    <Content Include="app\static\app\imgUser\podg-vl.png" />
+    <Content Include="app\static\app\imgUser\terlech.png" />
+    <Content Include="app\static\app\img\email.png" />
+    <Content Include="app\static\app\img\keylogin.png" />
+    <Content Include="app\static\app\img\keylogin2.png" />
+    <Content Include="app\static\app\img\NLtitle.png" />
+    <Content Include="app\static\app\img\NLtitle3.png" />
+    <Content Include="app\static\app\img\reload.png" />
+    <Content Include="app\static\app\img\reload2.png" />
+    <Content Include="app\static\app\js\bootstrap.min.js" />
+    <Content Include="app\static\app\js\bootstrap.min.js.map" />
+    <Content Include="app\static\app\js\jquery-ui-1.10.3.min.js" />
+    <Content Include="app\static\app\js\jquery-ui.min.js" />
+    <Content Include="app\static\app\js\jquery_12.min.js" />
+    <Content Include="app\static\app\js\popper.min.js" />
+    <Content Include="app\templates\app\400.html" />
+    <Content Include="app\templates\app\403.html" />
+    <Content Include="app\templates\app\404.html" />
+    <Content Include="app\templates\app\500.html" />
+    <Content Include="app\templates\app\empty_data.html" />
+    <Content Include="app\templates\app\index.html" />
+    <Content Include="app\templates\app\instr_for_user.html" />
+    <Content Include="app\templates\layout\base_layout.html" />
+    <Content Include="app\templates\layout\mes_layout.html" />
+    <Content Include="app\templates\layout\midl_layout.html" />
+    <Content Include="app\templates\layout\WebPage1.html" />
+    <Content Include="app\templates\registration\confirm_password.html" />
+    <Content Include="app\templates\registration\email_send.html" />
+    <Content Include="app\templates\registration\login.html" />
+    <Content Include="app\templates\registration\logout.html" />
+    <Content Include="app\templates\registration\password_confirmed.html" />
+    <Content Include="app\templates\registration\reset_email.html" />
+    <Content Include="app\templates\registration\reset_password.html" />
+    <Content Include="app\templates\registration\reset_subject.txt" />
+    <Content Include="app\templates\tags\tag_comp_prof_head.html" />
+    <Content Include="app\templates\tags\tag_comp_prof_parentuser.html" />
+    <Content Include="app\templates\tags\tag_comp_prof_quest.html" />
+    <Content Include="app\templates\tags\tag_comp_prof_title.html" />
+    <Content Include="app\templates\tags\tag_cons.html" />
+    <Content Include="app\templates\tags\tag_head_panel.html" />
+    <Content Include="app\templates\tags\tag_profil.html" />
+    <Content Include="app\templatetags\__pycache__\comp_templ.cpython-37.pyc" />
+    <Content Include="app\templatetags\__pycache__\ext_data_user.cpython-37.pyc" />
+    <Content Include="app\templatetags\__pycache__\__init__.cpython-37.pyc" />
+    <Content Include="app\use_mysql\__pycache__\conn_utils.cpython-37.pyc" />
+    <Content Include="prtesting\any_python_tests\any_templ_json\templ_fields_models.json" />
+    <Content Include="prtesting\any_python_tests\__pycache__\conn_utils.cpython-37.pyc" />
+    <Content Include="prtesting\templates\prtesting\index.html" />
+    <Content Include="prtesting\tests\advuser\any_tests\test_path.json" />
+    <Content Include="prtesting\tests\advuser\any_tests\test_serv_proc.json" />
+    <Content Include="prtesting\tests\advuser\modl_serv\test_path.json" />
+    <Content Include="prtesting\tests\advuser\modl_serv\test_sprstatus_serv.json" />
+    <Content Include="prtesting\tests\advuser\serv_advuser\test_path.json" />
+    <Content Include="prtesting\tests\advuser\serv_advuser\test_serv_advuser.json" />
+    <Content Include="prtesting\tests\advuser\serv_advuser\test_serv_advuser_next.json" />
+    <Content Include="prtesting\tests\advuser\serv_sprstatus\test_path.json" />
+    <Content Include="prtesting\tests\advuser\serv_sprstatus\test_sprstatus_serv.json" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_advuser.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_advuser2.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_advuser_user.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_forms.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_modl_serv_sprstatus.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_serv_advuser.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_serv_proc.cpython-37.pyc" />
+    <Content Include="prtesting\tests\advuser\__pycache__\test_serv_sprstatus.cpython-37.pyc" />
+    <Content Include="prtesting\tests\app\com_data\test_path.json" />
+    <Content Include="prtesting\tests\app\com_data\test_res_proc.json" />
+    <Content Include="prtesting\tests\app\models\spr_setting\test_path.json" />
+    <Content Include="prtesting\tests\app\models\spr_setting\test_serv_loggin.json" />
+    <Content Include="prtesting\tests\app\models\Str_key_session\test_path.json" />
+    <Content Include="prtesting\tests\app\models\Str_key_session\test_str_key_session.json" />
+    <Content Include="prtesting\tests\app\test_path.json" />
+    <Content Include="prtesting\tests\app\__pycache__\test_app.cpython-37.pyc" />
+    <Content Include="prtesting\tests\app\__pycache__\test_app_models.cpython-37.pyc" />
+    <Content Include="prtesting\tests\app\__pycache__\test_com_data.cpython-37.pyc" />
+    <Content Include="prtesting\tests\test_path.json" />
+    <Content Include="prtesting\tests\__pycache__\__init__.cpython-37.pyc" />
+    <Content Include="requirements.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="advuser\" />
+    <Folder Include="advuser\migrations\" />
+    <Folder Include="advuser\templates\" />
+    <Folder Include="advuser\templates\advuser\" />
+    <Folder Include="app\" />
+    <Folder Include="app\anydata_temp\html_templ\" />
+    <Folder Include="app\com_data\" />
+    <Folder Include="app\com_data\__pycache__\" />
+    <Folder Include="app\com_serv_dbase\" />
+    <Folder Include="app\com_serv_dbase\__pycache__\" />
+    <Folder Include="app\loggin\" />
+    <Folder Include="app\migrations\" />
+    <Folder Include="app\anydata_temp\" />
+    <Folder Include="app\static\" />
+    <Folder Include="app\static\app\" />
+    <Folder Include="app\static\app\css\" />
+    <Folder Include="app\static\app\css\fontAwesome\" />
+    <Folder Include="app\static\app\css\fontAwesome\css\" />
+    <Folder Include="app\static\app\css\fontAwesome\fonts\" />
+    <Folder Include="app\static\app\css\images\" />
+    <Folder Include="app\static\app\imgUser\" />
+    <Folder Include="app\static\app\img\" />
+    <Folder Include="app\static\app\js\" />
+    <Folder Include="app\static\app\imginstr\" />
+    <Folder Include="app\static\app\anyjs\" />
+    <Folder Include="app\templates\" />
+    <Folder Include="app\templates\app\" />
+    <Folder Include="app\templates\layout\" />
+    <Folder Include="app\templates\registration\" />
+    <Folder Include="app\templates\tags\" />
+    <Folder Include="app\templatetags\" />
+    <Folder Include="app\templatetags\__pycache__\" />
+    <Folder Include="app\use_mysql\" />
+    <Folder Include="app\use_mysql\__pycache__\" />
+    <Folder Include="nltest\" />
+    <Folder Include="prtesting\" />
+    <Folder Include="prtesting\any_python_tests\" />
+    <Folder Include="prtesting\any_python_tests\any_templ_json\" />
+    <Folder Include="prtesting\any_python_tests\__pycache__\" />
+    <Folder Include="prtesting\migrations\" />
+    <Folder Include="prtesting\templates\" />
+    <Folder Include="prtesting\templates\prtesting\" />
+    <Folder Include="prtesting\tests\" />
+    <Folder Include="prtesting\tests\advuser\" />
+    <Folder Include="prtesting\tests\advuser\any_tests\" />
+    <Folder Include="prtesting\tests\advuser\modl_serv\" />
+    <Folder Include="prtesting\tests\advuser\serv_advuser\" />
+    <Folder Include="prtesting\tests\advuser\serv_sprstatus\" />
+    <Folder Include="prtesting\tests\advuser\__pycache__\" />
+    <Folder Include="prtesting\tests\app\" />
+    <Folder Include="prtesting\tests\app\com_data\" />
+    <Folder Include="prtesting\tests\app\models\" />
+    <Folder Include="prtesting\tests\app\models\spr_setting\" />
+    <Folder Include="prtesting\tests\app\models\Str_key_session\" />
+    <Folder Include="prtesting\tests\app\__pycache__\" />
+    <Folder Include="prtesting\tests\__pycache__\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.7</Version>
+      <Description>env (Python 3.7 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Django.targets" />
+  <!-- Specify pre- and post-build commands in the BeforeBuild and 
+       AfterBuild targets below. -->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <AutoAssignPort>True</AutoAssignPort>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

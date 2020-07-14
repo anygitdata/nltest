@@ -1,0 +1,22 @@
+[
+  {
+    "test": "tests.advuser.test_modl_serv_sprstatus.test_type_status_user",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование class Type_status_user "
+    }
+  },
+
+  {
+    "test": "tests.advuser.test_modl_serv_sprstatus.test_res_proc",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование базового класса Res_proc "
+    }
+  }
+
+]

@@ -1,0 +1,54 @@
+
+{% extends 'layout/base_layout.html' %}
+
+
+{% block main %}
+
+{% block header %} <h3 class="text-center">Подтверждение на удаление <br /> профиля из базы</h3>  {% endblock %}
+
+
+<div class="container">
+{# Отображение справочной информации  #}
+
+    <div class="row col-12">
+
+        {% for key, val in param.items %}
+            <div class="col-3">
+                {{key}}
+            </div>
+            <div class="col-9">
+                {{val}}
+            </div>
+        {% endfor %}
+
+    </div>
+
+    <form method="post">
+         {% csrf_token %}
+
+            {% for field in form.visible_fields %}
+
+                <div class="row col-12 mt-2">
+                    <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
+                        {{field.label}}
+                    </div>
+
+                    <div col-auto>
+                        {{field}}
+                    </div>
+                </div>
+
+            {% endfor %}
+     
+
+        <div class="row justify-content-center col-8 mt-3 mb-3">
+            <div class="col-2">
+                <input class="btn btn-info" type="submit" value="Удалить" />
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

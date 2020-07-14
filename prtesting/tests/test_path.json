@@ -1,0 +1,10 @@
+{
+  "info": "Базовый каталог для проведения тестов",
+  "details": "аргумент directory заполняется по шаблону direct1/dir2/ ...",
+
+  "path": {
+    "directory": "advuser/serv_advuser",
+    "files": []
+  }
+
+}

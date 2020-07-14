@@ -1,0 +1,102 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>{%block title%}Твой путь{%endblock%}</title>
+
+    <link href="{% static 'app/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <style>
+    html, body {
+        height: 100%;
+    }
+
+    @media (min-width:576px) {
+        html {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        html {
+            font-size: 1.4rem;
+        }
+    }
+
+    @media (min-width: 992px) {
+        html {
+            font-size: 1.6rem;
+        }
+    }
+
+    .banner {
+        min-height: 150px;
+        /*width: 100%;*/
+        background-color: #c6f5c4
+    }
+
+    .footer {
+        min-height: 5rem;
+        background-color: #808080;
+        color: white;
+    }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="d-flex flex-column h-100 wrapper" >
+
+         <header class="header">
+              <div class="banner">
+            </div>
+         </header>
+
+
+        {# Основной контент по центру с отступами по горизонтали 0,25% #}
+        <div class="flex-grow-1 main ml-5 mt-3 ">
+
+                {% block header %}  {% endblock  %}
+
+                {% block main %} {% endblock main %}
+            <!-- 
+            <br />
+            <a class="linkout text-info" href="{% url 'mainapp' %}">Перейти на главную страницу</a>
+                -->
+
+        </div>
+
+
+        <div class="flex-grow-0 footer">
+                <div class="container-fluid h-100">
+                    <div class="row align-items-center h-100">
+                        <div class="col-2 text-center">
+                           ® Проект 2020 г <br />
+                            Найти себя
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+
+    <script src="{% static 'app/js/jquery_12.min.js' %}"></script>
+    <script src="{% static 'app/js/popper.min.js' %}"></script>
+    <script src="{% static 'app/js/bootstrap.min.js' %}"></script>
+
+
+    <script type="text/javascript">	
+	(function($) {
+        $(document).ready(function () {
+            {% block scripts %}
+            {% endblock%}
+		});				
+	})(jQuery);	
+</script>
+
+</body>
+</html>

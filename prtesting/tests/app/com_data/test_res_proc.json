@@ -1,0 +1,22 @@
+[
+  {
+    "test": "tests.app.test_com_data.test_getUser",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование процедуры getUser "
+    }
+  },
+
+  {
+    "test": "tests.app.test_com_data.test_res_proc",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование базового класса Res_proc "
+    }
+  }
+
+]

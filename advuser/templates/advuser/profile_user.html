@@ -1,0 +1,38 @@
+{# Шаблон профиля #}
+
+{% extends 'layout/base_layout.html' %}
+
+{% load comp_templ %}
+{% load static %}
+
+{%block header%} <h3 class="text-center"> Профиль пользователя </h3> {%endblock%}
+
+{# Заполнение основного контента #}
+{%block main %}
+
+<div class="container">
+
+
+    {# -------------- Шапка профиля с анкетными данными -------------- #}
+    {# prof[param] -> imgphoto , full_name, status, idcomp #}
+    {% templ_title param %}
+
+
+    {# ---------------- Личные данные, наставника и руководителя проекта -------------------- #}
+    {# prof[prof] -> включает ВСЕ данные Логин, Пароль, Телефон, Эл. почта  #}
+    {# данныеНаставника данныеРукПроета #}
+    {# idrow=parentData используетя для вставки разделителя в виде горЛинии #}
+
+    {% templ_head prof %}
+
+    {% if btn_upd %}
+    <div class="mt-1">
+        <a class="text-info" href="{% url 'redirupdprof' %}" >Изменить профиль</a> <br />
+        <a class="text-info" href="{% url 'updpswbyUser' %}" >Изменить пароль</a>
+    </div>
+
+{% endif %}
+
+</div>
+
+{%endblock main%}

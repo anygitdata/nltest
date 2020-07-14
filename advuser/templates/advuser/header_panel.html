@@ -1,0 +1,100 @@
+
+{% extends 'layout/base_layout.html' %}
+
+
+{% block main %}
+
+{%block header%} <h3 class="text-center"> Панель редактирования <br />профиля участников проекта </h3> {%endblock%}
+
+<form method="post">
+    {% csrf_token %}
+
+   <div class="container mt-4">
+
+    {% if not res %}  {# Вывод ошибок на уровне БД #}
+        <div> <em style="color:red" > {%if error %}{{error}} {%endif%}  </em> </div>
+    {% endif %}
+
+        {# мнимая ошибка из-за двойного использования div см. строку 60  #}
+        <div class="row">
+            
+            {% for field in form.visible_fields %}
+    
+                {# Вывод полей формы #}
+                {% if field.name == 'id_command' %}           
+
+                    {# Отображение радиоКнопок для выбора типа команды #}
+                    <div class="row col-12 mt-4 font-weight-bold">
+                        <div class="col-4 text-left text-left ml-3">
+                            {{field.label}}
+                        </div>
+
+                        <div class="col-12 ml-4">
+
+                            {% for radio in field %}
+                                <div class="form-check form-check-inline ml-2">
+                                        {{ radio.tag }}
+                                    <label for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                                
+                                </div>
+                            {% endfor %}                        
+
+                        </div>
+                    </div>
+
+                {% else %}  {# if field.name == 'id_command'  #}
+                    
+                {# Вывод сообщений об ошибках #}
+                {% if field.errors %}
+                    <div class="col-auto offset-md-1 mt-3 mb-0">
+                        <ul style="color: red">
+                        {% for error in field.errors %}
+                            <li><em>{{error|escape}}</em></li>    
+                        {%endfor%}
+                        </ul>
+                    </div>
+                                
+                    {# Смещение контента вверх на 20px, чтобы прижать к сообщению ошибки #}
+                    <div class="row col-12" style="margin-top:-20px;" >
+
+                    {%else%} {#  if field.errors #}
+
+
+                {# Расположение контента в котором нет сообщений об ошибках #}
+                <div class="row col-12 mt-2">
+
+                    {% endif %} 
+
+                        <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
+                            {{field.label}}
+                        </div>
+
+                        <div col-auto>
+                            {{field}}
+                        </div>
+
+                    </div>
+
+                {%endif%}   {# Конец блока if field.name == id_command#}             
+
+
+            {% endfor %}  {# for ... form.visible_fields #}
+
+             </div>
+    </div>
+
+    <div class="row justify-content-center col-8 mt-3 mb-3">
+        <div class="col-2">
+            <input class="btn btn-info" type="submit" value="Продолжить" />
+        </div>
+    </div>
+</form>
+
+<a class="text-info" href="{% url 'listprofils' %}" >Список менеджеров</a>
+<br />
+
+<a class="text-info" href="{% url 'addprof_member' %}" >Создать профиль менеджера</a>
+
+{% endblock %}

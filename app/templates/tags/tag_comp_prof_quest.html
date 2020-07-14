@@ -1,0 +1,30 @@
+
+
+{# Шаблон профиля для гостевого входа #}
+
+
+<div>
+    <h4 class="m-0 p-0">Гостевой вход</h4>
+    <div style="line-height:22px " class=" pb-3 border-bottom border-dark">
+        <em>Регистрация на сайте позволит более полно <br /> пользоваться ресурсами сайта</em>
+    </div>
+
+
+    {% for item in prof %}
+    <div class="row">
+        <div class="row w-100">
+            <div class="col-5 pr-2 text-right">
+                {{item.str}}
+            </div>
+            <div class="col-auto">
+                {{item.val}}
+            </div>
+        </div>
+    </div>
+    {%endfor%}
+
+    <div class="mt-5">
+        <a class="btn btn-info" href="{% url 'addprofquest' %}">Регистрация на сайте</a>
+    </div>
+</div>
+

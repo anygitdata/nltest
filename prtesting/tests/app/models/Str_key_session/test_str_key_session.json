@@ -1,0 +1,12 @@
+[
+  {
+    "test": "tests.app.test_app_models.test_Str_key_session",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "",
+      "info": " Тест class Str_key_session обработка строковых идентификаторов для key session "
+    }
+  }
+
+]

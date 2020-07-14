@@ -1,0 +1,38 @@
+[
+  {
+    "test": "tests.advuser.test_serv_proc.test_create_json_fields_models",
+    "stop": 0,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Создание шаблона для app_spr_fields_models "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_proc.test_con_mysql",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование использования сервПроцедур для обработки данных профиля "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_proc.test_init_templ_json",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Получение файла json for servProcedure for mySql "
+    }
+  },
+  {
+    "test": "tests.advuser.test_serv_proc.test_create_prof",
+    "stop": 1,
+    "param": {
+      "arg": [],
+      "res": "  ",
+      "info": " Тестирование modul advuser.serv_advuser procedure: test_get_subRows_head "
+    }
+  }
+]

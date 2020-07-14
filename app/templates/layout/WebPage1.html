@@ -1,0 +1,147 @@
+﻿<body>
+	
+    <div class="d-flex flex-column h-100 wrapper" style="min-width: 400px !important">
+		
+		<header class="header">
+			<div class="banner">
+			</div>
+		</header>
+		
+        
+        <div class="flex-grow-1 main mt-2 mb-2" style="margin: 0 auto; width: 95%;">
+			
+			
+			<h3 class="text-center mt-3">Регистрация пользователя</h3>
+			
+			<div class="container mt-4">
+				
+				<form method="post">
+					
+					<input type="hidden" name="csrfmiddlewaretoken" value="Rq1QQ4ceertUZo4WPIa7gg1Gsn9agChymgkYcmIeZOoejFwQSbQNRB9SD3nUrJiF">
+					
+					<div class="row">
+						
+						<div class="row col-12 mt-2">
+							
+							
+                            <div class="col-3 text-right pt-2 pr-2 font-weight-bold">
+                                Имя
+							</div>
+							
+                            <div col-auto="">
+                                <input type="text" name="firstname" class="form-control" placeholder="Имя" maxlength="50" required="" id="id_firstname">
+							</div>
+                            
+							
+						</div>
+						
+						<div class="row col-12 mt-2">							
+							
+							<div class="col-3 text-right pt-2 pr-2 font-weight-bold">
+								Фамилия
+							</div>
+							
+							<div col-auto="">
+								<input type="text" name="lastname" class="form-control" placeholder="Фамилия" maxlength="50" required="" id="id_lastname">
+							</div>                            
+							
+						</div>
+						
+						
+						<div class="row col-12 mt-2">
+							
+                            <div class="col-3 text-right pt-2 pr-2 font-weight-bold">
+                                Эл. почта
+							</div>
+							
+                            <div col-auto="">
+                                <input type="text" name="email" class="form-control" placeholder="Адрес элПочты" maxlength="50" required="" id="id_email">
+							</div>
+
+							
+						</div>
+
+						
+						<div class="row col-12 mt-2">
+							
+							
+                            <div class="col-3 text-right pt-2 pr-2 font-weight-bold">
+                                Телефон
+							</div>
+							
+                            <div col-auto="">
+                                <input type="text" name="phone" class="form-control" placeholder="Телефон" required="" id="id_phone">
+							</div>
+							
+						</div>
+						
+						<div class="row col-12 mt-2">
+							
+							
+                            <div class="col-3 text-right pt-2 pr-2 font-weight-bold">
+                                Возраст
+							</div>
+							
+                            <div col-auto="">
+                                <input type="text" name="ageGroup" class="form-control" placeholder="Кол-во лет" required="" id="id_ageGroup">
+							</div>
+							
+                            
+                            
+                            <div class="col-11 offset-md-1" style="margin-top:-10px; font-size:0.8rem;">
+                                <em> Используется для отбора информации с учетом возрастной группы </em>
+							</div>
+                            
+							
+						</div>
+                        
+                        <div class="row col-12 mt-2 font-weight-bold">
+                            <div class="col-3 text-right" pt-2="" pr-2="">
+                                Пол
+							</div>
+							
+                            <div class="col-auto">
+								
+								
+								<div class="form-check form-check-inline">
+									<input type="radio" name="pol" value="М" class="form-check-input" id="id_pol_0" required="">
+									<label for="id_pol_0">
+										Муж
+									</label>
+									
+									
+								</div>
+								
+								<div class="form-check form-check-inline">
+									<input type="radio" name="pol" value="Ж" class="form-check-input" id="id_pol_1" required="">
+									<label for="id_pol_1">
+										Жен
+									</label>
+									
+									
+								</div>
+								
+								
+							</div>
+						</div>
+						<div class="row justify-content-center col-8 mt-3 mb-3">
+							<div class="col-2">
+								<input class="btn btn-info" type="submit" value="Сохранить">
+							</div>
+						</div>
+						
+					</div>
+					
+				</form>
+
+			</div>							
+				
+		</div>
+		
+		
+	</div>
+	
+
+	
+	
+</body>

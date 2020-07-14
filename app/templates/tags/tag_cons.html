@@ -1,0 +1,41 @@
+
+{# Тэг для отображения данных по самому пользователю #}
+
+
+
+{% if items %}
+
+    {% if not typedata %}
+        <div class="text-center">Личный консультант </div>
+    {% else %}
+        <div class="text-center">Администратор проекта </div>
+    {% endif %}
+
+    <div class="w-100"></div>
+    <div style="font-size: 0.6rem;" class="text-left" >     
+        <ul style="list-style-type:none" >
+        {%for item in items %}
+            <li> 
+                {%if item.item == 'email'%}
+                   <i class="fa fa-share" aria-hidden="true"></i>
+                {% elif item.item == 'phone'%}
+                    <i class="fa fa-phone" aria-hidden="true"></i>
+                {%else%}
+                    <i class="fa fa-header" aria-hidden="true"></i>
+                {%endif%}
+
+                {{item.val}}
+                </li>
+
+        {% endfor %}
+
+        </ul>
+    </div>
+
+{% endif %}
+
+
+
+
+
+

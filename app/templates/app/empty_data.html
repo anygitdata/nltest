@@ -1,0 +1,26 @@
+{# Файл для ответа, когда нет данных или данные введенные пользователем не верны #}
+
+{% extends 'layout/mes_layout.html' %}
+
+
+
+
+{% block header %} 
+    {% if title %}
+        <h3> {{title}} </h3> 
+    {%else%}
+        <h3>Ошибка ввода параметра </h3> 
+{% endif %}
+
+
+
+{%endblock%}
+
+
+{% block main %}
+    
+<p> {{mes}} </p>
+
+
+{% endblock main %}
+

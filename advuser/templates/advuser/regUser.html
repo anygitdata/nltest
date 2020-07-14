@@ -1,0 +1,120 @@
+
+{# Бланк регистрации пользователя гостевого уровня #}
+
+{% extends 'layout/mes_layout.html' %}
+
+
+{% block title %}Регистрация{%endblock%}
+
+
+{# Заголовок страницы #}
+
+{% block header %}         
+    <h3 class="text-center mt-3">{{title}}</h3>
+{%endblock header%}
+
+{# Основной блок отображения данных  #}
+{% block main %}
+
+
+{# Контент бланка регистрации пользователя #}
+<div class="container mt-4">
+
+    {% if error %}  {# Вывод ошибок на уровне БД #}
+        <div> <em> {{mes}} </em> </div>
+    {% endif %}
+
+    <form method="post">
+
+        {% csrf_token %}
+        
+        {# мнимая ошибка из-за двойного использования div см. строку 118  #}
+        <div class="row">
+
+            {# Выод полей формы #}
+            {% for field in form.visible_fields %}
+    
+                {# Отображение полей формы #}
+                {% if field.name == 'pol' or field.name == 'sendMes' %}           
+
+                    {# Отображение радиоКнопок для выбора пола #}
+                    <div class="row col-12 mt-2 font-weight-bold">
+                        <div class="col-3 text-right" pt-2 pr-2 >
+                            {{field.label}}
+                        </div>
+
+                        <div class="col-auto">
+
+                            {% for radio in field %}            
+                                <div class="form-check form-check-inline">
+                                        {{ radio.tag }}
+                                    <label for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                                
+                                </div>
+                            {% endfor %}                        
+
+                        </div>
+                    </div>
+
+                    {% else %}  {# if field.name == 'pol'  #}
+                    
+
+                    {% if field.errors %}
+                        <div class="col-auto offset-md-1 mt-3 mb-0">
+                            <ul style="color: red">
+                            {% for error in field.errors %}
+                                <li><em>{{error|escape}}</em></li>    
+                            {%endfor%}
+                            </ul>
+                        </div>
+                                
+                        {# Смещение контента вверх на 20px, чтобы прижать к сообщению ошибки #}
+                        <div class="row col-12" style="margin-top:-20px;" >
+
+                    {%else%} {#  if field.errors #}
+
+
+                        {# Расположение контента в котором нет сообщений об ошибках #}
+                        <div class="row col-12 mt-2">
+                    {% endif %} 
+
+                        <div class="col-3 text-right pt-2 pr-2 font-weight-bold">
+                            {{field.label}}
+                        </div>
+
+                        <div col-auto>
+                            {{field}}
+                        </div>
+
+                        {# Для отображения справочной информации о назначении поля и прочее ...  #}
+                        {% if field.help_text %}
+                        <div class="col-11 offset-md-1" style="margin-top:-10px; font-size:0.8rem;" >
+                            <em> {{field.help_text}} </em>
+                        </div>
+                        {%endif%}
+
+                    </div>
+
+
+                {%endif%}
+                {# {% if field.name == 'pol' %} #}
+
+            {% endfor %}
+                
+                    
+                <div class="row justify-content-center col-8 mt-3 mb-3">
+                    <div class="col-2">
+                        <input class="btn btn-info" type="submit" value="Сохранить" />
+                    </div>
+                </div>
+
+
+        </div>
+            
+    </form>
+
+</div>
+
+{% endblock %}

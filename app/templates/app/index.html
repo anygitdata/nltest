@@ -1,0 +1,28 @@
+{% extends 'layout/base_layout.html' %}
+{% load static %}
+
+
+{% block main %}
+
+    <h1 class="mb-0 pb-0"> Технологии выживания </h1>
+    <div style="font-size:0.7rem; margin-top:-10px;">
+        <b>  <em> в условиях информационного хаоса и экологического кризиса </em> </b>
+    </div>    
+    <p class="mt-1" style="font-size:0.8rem;"> <em> Технологии выживания - когда рушатся надежды, методы жизнеобеспечения, <br />
+        когда меняется восприятие на мир, когда начинаем конфликтовать с самим собой ... </em>
+    </p>
+
+
+<style>
+    .instr-prof{
+              margin-bottom:0.45rem;
+          }
+</style>
+
+{% if levelperm >= 30 %}
+
+    {% include 'app/instr_for_user.html' %}
+
+{% endif %}
+
+{% endblock main %}
