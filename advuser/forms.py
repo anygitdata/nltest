@@ -196,18 +196,65 @@ class UpdStatus_userForm(forms.Form):
                     required=False,  
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Лимит супер-РукГр"}))
 
+    # Проверка на уровне формы
+    def clean(self):
+
+        super().clean()
+        errors = {}
+                    
+        if errors:
+            raise ValidationError(errors)
 
 
     @classmethod
-    def save_data_status(cls, arg_query_dc)->Res_proc:
+    def save_data_status(cls, arg_user, arg_session)->Res_proc:
         """ Процедура на уровне class -> сохранение изменений status_id/limitcon """
 
-        def get_dataHeader():
-            """ Данные Head: statusData and numCount limitcon """
+        # Структура arg_session
+        #lst_lvperm = lst_lvperm,
+        #s_limit=s_limit,
+        #upd_username=dc_datauser['username'],
+        #upd_full_name=dc_datauser['full_name'],
+        #upd_status=type_status.strIdent
 
+        cd_clean = self.cleaned_data;
+
+        user_head = getUser(arg_user)
+        user_modf = getUser(arg_session['upd_username'])
+        
 
         res_proc = Res_proc()
-        user;
+        
+        def get_dataHeader():
+            """ Данные Head: statusData and numCount limitcon """
+            from app.models import spr_fields_models as fields
+
+            nonlocal user_head, user_modf, cd_clean
+
+            res = Res_proc();
+            res.res = False
+
+            type_status_head = type_status_user(user_head)
+            type_status_modf = type_status_user(user_modf)
+
+            # Проверка прав на изменение профиля
+            if type_status_head.levelperm < 40:
+                
+                res.mes = 'Нет прав на редактирование профиля'
+                return res
+
+            levelperm = cd_clean['status'].levelperm
+            if abs(type_status_modf.levelperm - levelperm) > 1:
+                res.mes = 'Повышение статуса более чем на один порядок не допускается'
+                return res
+
+            
+            rec = fields.objects.find(id_key=levelperm)
+            if not res.exists():
+                res.mes = 'Уровень доступа не определен'
+                return res
+
+            rec = rec.first()
 
 
         try:

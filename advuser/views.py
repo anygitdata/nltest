@@ -92,7 +92,17 @@ def UpdStatus_user(request):
     
 
     if request.method == 'POST':
-        ...
+        form = UpdStatus_userForm(request.POST)
+        cd_session = request.session['UpdStatus_user']
+
+        if form.is_valid():
+            if form.is_valid():
+                user = request.user;
+
+                res_save = form.save_data_status(user, cd_session)
+
+
+
 
     else: # Обработка запроса GET 
         
