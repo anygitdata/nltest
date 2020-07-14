@@ -200,9 +200,15 @@ class UpdStatus_userForm(forms.Form):
 
     @classmethod
     def save_data_status(cls, arg_query_dc)->Res_proc:
-        """ Процедура на уровне class -> сохранение изменений status_id """
+        """ Процедура на уровне class -> сохранение изменений status_id/limitcon """
+
+        def get_dataHeader():
+            """ Данные Head: statusData and numCount limitcon """
+
 
         res_proc = Res_proc()
+        user;
+
 
         try:
             ...
