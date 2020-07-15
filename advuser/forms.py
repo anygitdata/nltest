@@ -540,7 +540,7 @@ class Modf_prof_byHeaderForm(Base_profForm):
             """ Инициализация значения limitcon """
             nonlocal cd_dict
 
-            limitcon = spr_fields_models.get_limitcon(levelperm) 
+            limitcon = spr_fields_models.get_limitcon40(levelperm) 
             if limitcon == 0 :
                 run_raise('form.AddProf_memberForm: Нет данных limitcon')
 
@@ -779,7 +779,7 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
                 run_raise(s_err + 'Нет прав на создание профиля', showMes=True)
 
             if cur_levelperm > 30 :
-                limitcon = spr_fields_models.get_limitcon(cur_levelperm) 
+                limitcon = spr_fields_models.get_limitcon40(cur_levelperm) 
                 if limitcon == 0 :
                     run_raise('form.AddProf_memberForm: Нет данных limitcon')
 

@@ -92,7 +92,7 @@ class spr_fields_models(models.Model):
 
 
     @classmethod
-    def get_limitcon(cls, arg_levelperm:int)->int:
+    def get_limitcon40(cls, arg_levelperm:int)->int:
         """ Получить значение лимитПодкл
         arg_levelperm значение  spr_fields_models.id_key
         """

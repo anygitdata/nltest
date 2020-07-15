@@ -247,7 +247,7 @@ class Com_proc_advuser:
             return None
 
 
-
+    @classmethod
     def get_head70_user(cls, arg_user)->User:
         """ Получить пользователя на уровне руководителя группы 
         with levelperm=70
@@ -273,7 +273,7 @@ class Com_proc_advuser:
             levelperm = row_master.status.levelperm
                         
 
-        return row_master
+        return parentuser
 
 
     # Руководитель группы гостВхода, клиента, менеджера

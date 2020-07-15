@@ -113,21 +113,24 @@ def UpdStatus_user(request):
         user_master = getUser( request.user)
         type_status_master = type_status_user(user_master)
 
-        if type_status_master.levelperm < 40 or type_status_master.levelperm <= type_status.levelperm:
-            return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Нет прав на обработку')
+        # Блок верификации
+        if 1 < 2 :
+            if type_status_master.levelperm < 40 or type_status_master.levelperm <= type_status.levelperm:
+                return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Нет прав на обработку')
 
-        if type_status.levelperm < 30:
-            return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус клиента не меняется')
+            if type_status.levelperm < 30:
+                return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус клиента не меняется')
 
+            if type_status.levelperm == 100 :
+                return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус руководителя проекта постоянный')
 
-        if type_status.levelperm == 100 :
-            return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус руководителя проекта постоянный')
-
-
-        if type_status_master.levelperm ==70:
-            head70_user = Com_proc_advuser.get_head70_user(user)
-            if head70_user.username != user_master.username:
-                return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
+            # ИзмСтатуса для профиля с уровнем levelperm=30 
+            if type_status.levelperm==30 and type_status_master.levelperm ==70:
+                head70_user = Com_proc_advuser.get_head70_user(user)
+                if head70_user.username != user_master.username:
+                    return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
+        
+        # Конец блока верификации 
 
 
         dc_limit = spr_fields_models.get_limitcon70()
