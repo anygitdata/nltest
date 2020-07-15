@@ -227,42 +227,54 @@ class UpdStatus_userForm(forms.Form):
         res_proc = Res_proc()
         
         def get_limitcon()->dict:
-            """ Данные по параметру limitcon """
+            """ Данные по параметру limitcon
+            кол-во заданного limitcon
+            кол-во используемого limitcon
+            return dict(limitcon=Num, numuser=Num)
+            """
+
             from .models import AdvUser
             from app.models import spr_fields_models as fields
 
             nonlocal user_head, cd_clean, levelperm
 
+
+            res = Res_proc();
+            
+            # dict для доступа к полям spr_fields_models.js_data[fields_model]
             dc_switch = {
                 30:'limitcon',
                 40:'limitcon40',
                 70:'limitcon70'
                 }
 
-            res = Res_proc();
+            limitcon = 0
+            res_dc = dict(limitcon=0, numuser=0)  # Значения as default
+
 
             if levelperm < 30:  # Никакой проверки не требуется
+                res.res_dict = res_dc
                 res.res = True
+                return res
             
             rec = AdvUser.objects.filter(parentuser=user_head.username);
             numuser = rec.count()
             
-            limitcon = 0
             if numuser > 0:
                 row = fields.objects.filter(id_key=levelperm)
                 if row.exists():
                     row.first()
                     dc_data = json.loads(row.js_data['fields_model'])
-                    switch (levelperm)
                     s_key = dc_switch[levelperm]
                     limitcon = dc_data[s_key]
+
             res_dc = dict(limitcon=limitcon, numuser=numuser)
             res.res_dict = res_dc
 
             return res
 
 
-        def get_dataHeader():
+        def get_permHeader():
             """ Данные Head: statusData and numCount limitcon """
             from app.models import spr_fields_models as fields
 
@@ -285,13 +297,7 @@ class UpdStatus_userForm(forms.Form):
                 res.mes = 'Повышение статуса более чем на один порядок не допускается'
                 return res
 
-            
-            rec = fields.objects.find(id_key=levelperm)
-            if not res.exists():
-                res.mes = 'Уровень доступа не определен'
-                return res
-
-            rec = rec.first()
+                      
 
 
         try:

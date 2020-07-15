@@ -102,11 +102,10 @@ def UpdStatus_user(request):
                 res_save = form.save_data_status(user, cd_session)
 
 
-
-
     else: # Обработка запроса GET 
         
         from .serv_sprstatus import Com_proc_sprstatus
+
         from app.models import spr_fields_models
         import json
 
@@ -125,6 +124,12 @@ def UpdStatus_user(request):
             return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус руководителя проекта постоянный')
 
 
+        if type_status_master.levelperm ==70:
+            head70_user = Com_proc_advuser.get_head70_user(user)
+            if head70_user.username != user_master.username:
+                return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
+
+
         dc_limit = spr_fields_models.get_limitcon70()
         res_dict = dc_limit.res_dict
         lst_lvperm = Com_proc_sprstatus.get_list_levelperm().res_list
@@ -134,7 +139,6 @@ def UpdStatus_user(request):
 
         dc_datauser = Com_proc_advuser.get_advData(user)
 
-
         dc_session = dict( 
                        lst_lvperm = lst_lvperm,
                        s_limit=s_limit,
@@ -142,7 +146,6 @@ def UpdStatus_user(request):
                        upd_full_name=dc_datauser['full_name'],
                        upd_status=type_status.strIdent                       
             )
-
 
         request.session['UpdStatus_user'] = dc_session  
 

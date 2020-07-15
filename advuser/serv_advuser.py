@@ -247,6 +247,35 @@ class Com_proc_advuser:
             return None
 
 
+
+    def get_head70_user(cls, arg_user)->User:
+        """ Получить пользователя на уровне руководителя группы 
+        with levelperm=70
+        return User 
+        """
+
+        from .serv_typestatus import type_status_user
+        from .models import AdvUser
+
+        user = getUser(arg_user);
+
+        row = AdvUser.objects.get(pk=user)
+        parentuser = row.parentuser
+
+        parentuser = getUser(parentuser)
+        row_master = AdvUser.objects.get(pk=parentuser)
+        levelperm = row_master.status.levelperm
+        while levelperm < 70 :
+            parentuser = row_master.parentuser
+            parentuser = getUser(parentuser)
+            row_master = AdvUser.objects.get(pk=parentuser)
+
+            levelperm = row_master.status.levelperm
+                        
+
+        return row_master
+
+
     # Руководитель группы гостВхода, клиента, менеджера
     # Используется для пользователй с уровнемДоступа менее 40 
     # return res_proc.res_model руководитель группы 
