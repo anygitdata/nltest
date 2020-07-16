@@ -93,14 +93,23 @@ def UpdStatus_user(request):
 
     if request.method == 'POST':
         form = UpdStatus_userForm(request.POST)
-        cd_session = request.session['UpdStatus_user']
+        dc_session = request.session['UpdStatus_user']
+
+        form.dc_param_verf = form.param_verf(user_head=user, user_modf=dc_session['upd_username'])
 
         if form.is_valid():
             if form.is_valid():
                 user = request.user;
 
-                res_save = form.save_data_status(user, cd_session)
+                res_save = form.save_data_status(user, dc_session)
 
+
+
+        else:
+            cont = dict(form=form)
+            cont.update(dc_session)
+
+            return render(request, 'advuser/upd_status_user.html', cont)
 
     else: # Обработка запроса GET 
         
@@ -110,38 +119,58 @@ def UpdStatus_user(request):
         import json
 
         type_status = type_status_user(user)
+        levelperm_user = type_status.levelperm
+
         user_master = getUser( request.user)
         type_status_master = type_status_user(user_master)
 
         # Блок верификации
         if 1 < 2 :
-            if type_status_master.levelperm < 40 or type_status_master.levelperm <= type_status.levelperm:
+            if type_status_master.levelperm < 40 or type_status_master.levelperm <= levelperm_user:
                 return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Нет прав на обработку')
 
-            if type_status.levelperm < 30:
+            if levelperm_user < 30:
                 return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус клиента не меняется')
 
-            if type_status.levelperm == 100 :
+            if levelperm_user == 100 :
                 return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус руководителя проекта постоянный')
 
             # ИзмСтатуса для профиля с уровнем levelperm=30 
-            if type_status.levelperm==30 and type_status_master.levelperm ==70:
+            if levelperm_user==30 and type_status_master.levelperm ==70:
                 head70_user = Com_proc_advuser.get_head70_user(user)
                 if head70_user.username != user_master.username:
                     return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
         
         # Конец блока верификации 
 
+        # Значение as default for levelperm== 40 кол-во менеджеров 
+        limitcon30 = spr_fields_models.get_limitcon40(40)
 
-        dc_limit = spr_fields_models.get_limitcon70()
-        res_dict = dc_limit.res_dict
+        # значение поля advuser.js_struct
+        dc_jsstruct = Com_proc_advuser.get_js_struct(user)  
+
+        # значения app_spr_fields_models.js_data
+        dc_limit70 = spr_fields_models.get_limitcon70()     
+        dc_limit70 = dc_limit70.res_dict
+        
+        res_dict = dict() 
+        if levelperm_user == 40:
+            res_dict['limitcon30'] = dc_jsstruct.get('limitcon') or 0
+            res_dict.update(dc_limit70 ) # значения default for levelperm=70
+
+        if levelperm_user == 70:
+            res_dict.update(dict(
+                                limitcon=dc_jsstruct('limitcon') or 0 ,
+                                limitcon40=dc_jsstruct('limitcon40') or 0,
+                                limitcon70=dc_jsstruct('limitcon70') or 0,
+                                limitcon30=limitcon30   # default for levelperm=40
+                                 ))
+
         lst_lvperm = Com_proc_sprstatus.get_list_levelperm().res_list
-        res_dict.update( dict(lvperm=lst_lvperm) )
-
+        res_dict.update( dict(lvperm=lst_lvperm ) )
         s_limit = json.dumps(res_dict, ensure_ascii=True)
 
         dc_datauser = Com_proc_advuser.get_advData(user)
-
         dc_session = dict( 
                        lst_lvperm = lst_lvperm,
                        s_limit=s_limit,

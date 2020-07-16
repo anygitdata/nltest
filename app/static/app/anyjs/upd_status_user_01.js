@@ -2,18 +2,14 @@
 (function ($) {
     // *********** модуль обработки интерактивного интерфейса status_id ************
 
-
-    //console.log('Инициализация видимости элементов интерфейса пользователя');
-
-    /* { limitcon: 20, limitcon40: 5, limitcon70: 0 lvperm: } */
+    /* { limitcon30: 10, limitcon: 50, limitcon40: 5, limitcon70: 1 lvperm: } */
     var limitcon = JSON.parse($('#s_limit').html());
     $('#s_limit').remove();  // удаление div  с исходными данными 
 
-    //console.log(limitcon);
-
 
     // **************** Блок начальной инициализации  input object  ***************
-    var id_limitcon = $('#id_limitcon').val();  
+    var id_limitcon30 = $('#id_limitcon30').val();  
+    var id_limitcon   = $('#id_limitcon').val();  
     var id_limitcon40 = $('#id_limitcon40').val();
     var id_limitcon70 = $('#id_limitcon70').val();
 
@@ -23,6 +19,8 @@
     
 
     // *************** присвоение начальных значений input object ******************
+    if (id_limitcon30 == null || id_limitcon30 == 0) $('#id_limitcon30').val(limitcon.limitcon30); 
+
     if (id_limitcon == null || id_limitcon == 0)     $('#id_limitcon').val(limitcon.limitcon); 
 
     if (id_limitcon40 == null || id_limitcon40 == 0) $('#id_limitcon40').val(limitcon.limitcon40); 
@@ -54,15 +52,16 @@
 
         var sel = $(e.target).val();
 
+        $('.limitcon30').hide();
         $('.limitcon').hide();
         $('.limitcon40').hide();
         $('.limitcon70').hide();
 
         switch (sel) {
             case 'subheader':
-                $('.limitcon').show();                
+                $('.limitcon30').show();                
                 break;
-            case 'headerexp':
+            case 'headerexp':                
                 $('.limitcon').show();
                 $('.limitcon40').show();
                 $('.limitcon70').show();

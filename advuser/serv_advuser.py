@@ -248,33 +248,52 @@ class Com_proc_advuser:
 
 
     @classmethod
+    def get_js_struct(cls, arg_user)->dict:
+        """ Выборка поля advUser.js_struct
+        используется при изменении статуса
+        return dict or None
+        """
+        from .models import AdvUser
+
+        user = getUser(arg_user)
+        advuser = AdvUser.objects.get(pk=user)
+        res_dc = json.loads(advuser.js_struct)
+
+        return res_dc
+
+
+    @classmethod
     def get_head70_user(cls, arg_user)->User:
         """ Получить пользователя на уровне руководителя группы 
         with levelperm=70
-        return User 
+        return User or None
         """
 
         from .serv_typestatus import type_status_user
         from .models import AdvUser
 
-        user = getUser(arg_user);
+        try:
 
-        row = AdvUser.objects.get(pk=user)
-        parentuser = row.parentuser
+            user = getUser(arg_user);
 
-        parentuser = getUser(parentuser)
-        row_master = AdvUser.objects.get(pk=parentuser)
-        levelperm = row_master.status.levelperm
-        while levelperm < 70 :
-            parentuser = row_master.parentuser
+            row = AdvUser.objects.get(pk=user)
+            parentuser = row.parentuser
+
             parentuser = getUser(parentuser)
             row_master = AdvUser.objects.get(pk=parentuser)
-
             levelperm = row_master.status.levelperm
+            while levelperm < 70 :
+                parentuser = row_master.parentuser
+                parentuser = getUser(parentuser)
+                row_master = AdvUser.objects.get(pk=parentuser)
+
+                levelperm = row_master.status.levelperm
                         
 
-        return parentuser
+            return parentuser
 
+        except:
+            return None
 
     # Руководитель группы гостВхода, клиента, менеджера
     # Используется для пользователй с уровнемДоступа менее 40 
