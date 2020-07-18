@@ -1,0 +1,13 @@
+{
+  "info": "Описатель структуры поля advUser.js_struct",
+  "info_list": {
+    "comp": "Структура полей для компании",
+    "quest": "Структура полей гостевого входа",
+    "status": "Структура полей status"
+  },
+  "fields": {
+    "comp": [ "idcomp" ],
+    "quest" [ "logincl", "pswcl" ],
+    "status": [ "limitcon", "limitcon40", "limitcon70" ]
+  }
+}

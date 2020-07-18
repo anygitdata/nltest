@@ -112,6 +112,7 @@
     <Content Include="advuser\templates\advuser\upd_password_user.html" />
     <Content Include="advuser\СтруктСвязей.txt" />
     <Content Include="app\anydata_temp\html_templ\templ_upd_status.html" />
+    <Content Include="app\anydata_temp\templ.json" />
     <Content Include="app\anydata_temp\templ_fields_header70.json" />
     <Content Include="app\com_data\__pycache__\any_mixin.cpython-37.pyc" />
     <Content Include="app\com_data\__pycache__\Ext_dict.cpython-37.pyc" />

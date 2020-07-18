@@ -4,6 +4,15 @@ import json
 from django.db import models
 
 
+class Templ_buf(models.Model):
+    from django.contrib.auth.models import User
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    parentuser = models.CharField(max_length=150) 
+    advData = models.TextField(max_length=500)
+    js_struct  = models.CharField(max_length=300, default='{}')
+
+
 class SprStatus(models.Model):
     status = models.CharField( primary_key=True, max_length=9, verbose_name='Статус' )
     strIdent = models.CharField( max_length=50, verbose_name='СтрокИдентификатор')

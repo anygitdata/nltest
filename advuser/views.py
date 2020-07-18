@@ -98,11 +98,8 @@ def UpdStatus_user(request):
         form.dc_param_verf = form.param_verf(user_head=user, user_modf=dc_session['upd_username'])
 
         if form.is_valid():
-            if form.is_valid():
-                user = request.user;
-
-                res_save = form.save_data_status(user, dc_session)
-
+            user = request.user;
+            res_save = form.save_data_status(user, dc_session)
 
 
         else:
