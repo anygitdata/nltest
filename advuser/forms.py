@@ -203,16 +203,69 @@ class UpdStatus_userForm(forms.Form):
                     required=False,  
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Лимит супер-РукГр"}))
 
+    def get_limit_used(self, levelperm_sel, arg_dc:dict):
+        from collections import namedtuple
+        from app.models import spr_fields_models as fields
+        import sys
+
+        res_clean    = namedtuple("res_clean", "used30,used40,used70,limit30,limit40,limit70")
+        res_clean40  = namedtuple("res_clean40", "used30 limit30")
+
+        res = None
+
+        limit_max = sys.maxsize
+        user_head = arg_dc['user_head']
+        user_modf = arg_dc['user_modf']
+        levelperm_head = arg_dc['levelperm_head']
+
+        if levelperm_sel == 40:
+            if levelperm_head < 100:
+                row = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=30).exclude(pk=user_modf)
+                            
+                limitcon_used = row.count()
+                
+            dc_clean40 = res_clean40(
+                limit30= limit_max if levelperm_head > 99 else fields.get_limitcon40(40),
+                used30=0 if levelperm_head > 99 else limitcon_used
+                )
+            
+            res = dc_clean40
+
+        if levelperm_head < 100:
+            row30 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=30).exclude(pk=user_modf)
+
+            row40 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=40).exclude(pk=user_modf)
+
+            row70 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=70).exclude(pk=user_modf)
+
+            dc_limit70 = fields.get_limitcon70()     
+            dc_limit70 = dc_limit70.res_dict
+
+
+            dc_clean = res_clean(
+                    used30= 0 if levelperm_head>99 else row30.count(), 
+                    used40= 0 if levelperm_head>99 else  row40.count(), 
+                    used70= 0 if levelperm_head>99 else  row70.count(),
+                    limit30= limit_max if levelperm_head>99 else dc_limit70.get('limitcon') or 0,
+                    limit40= limit_max if levelperm_head>99 else dc_limit70.get('limitcon40') or 0,
+                    limit70= limit_max if levelperm_head>99 else dc_limit70.get('limitcon70') or 0
+                    )
+
+            res = dc_clean
+
+
+        return res
+
+
     # Проверка введенных данных на уровне формы
     def clean(self):
-        from collections import namedtuple
+        
         import sys
 
         super().clean()
         errors = {}
     
-        res_clean    = namedtuple("res_clean", "used30,used40,used70,limit30,limit40,limit70")
-        res_clean40  = namedtuple("res_clean40", "used30 limit30")
+        
         dc_clean = None
         dc_clean40 = None
 
@@ -258,56 +311,44 @@ class UpdStatus_userForm(forms.Form):
 
         # верификация на уровне levelperm
         if not errors:
-            limit_max = sys.maxsize
+            
 
-            if levelperm_sel > 30:  
-                if levelperm_sel == 40:
-                    
-                    if levelperm_head < 100:
-                        row = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=30).exclude(pk=user_modf)
-                        limitcon_used = row.count()
-                
-                    dc_clean40 = res_clean40(
-                        limit30= limit_max if levelperm_head > 99 else fields.get_limitcon40(40),
-                        used30=0 if levelperm_head > 99 else limitcon_used
+            dc_arg = dict(
+                        levelperm_sel = levelperm_sel,
+                        levelperm_head = levelperm_head,
+                        user_modf = user_modf,
+                        user_head = user_head
                         )
+
+            if levelperm_sel == levelperm_user_base:
+                if levelperm_sel == 40:
+                    ... 
+                            
+            else:
+
+                if levelperm_sel > 30:  
+                    if levelperm_sel == 40:
                         
+                        dc_clean40 = self.get_limit_used(40, dc_arg) 
 
-                    # Верификация введенных значений для levelperm_sel=40
-                    if dc_clean40.limit30 < (dc_clean40.used30 + dc_cleaned['limitcon30']) :
-                        errors['limitcon30'] = 'Превышен лимит подключений'
-
-
-                if levelperm_sel == 70:
-                    if levelperm_head < 100:
-                        row30 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=30).exclude(pk=user_modf)
-
-                        row40 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=40).exclude(pk=user_modf)
-
-                        row70 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=70).exclude(pk=user_modf)
-
-                        dc_limit70 = fields.get_limitcon70()     
-                        dc_limit70 = dc_limit70.res_dict
+                        # Верификация введенных значений для levelperm_sel=40
+                        if dc_clean40.limit30 < (dc_clean40.used30 + dc_cleaned['limitcon30']) :
+                            errors['limitcon30'] = 'Превышен лимит подключений'
 
 
-                    dc_clean = res_clean(
-                                used30= 0 if levelperm_head>99 else row30.count(), 
-                                used40= 0 if levelperm_head>99 else  row40.count(), 
-                                used70= 0 if levelperm_head>99 else  row70.count(),
-                                limit30= limit_max if levelperm_head>99 else dc_limit70.get('limitcon') or 0,
-                                limit40= limit_max if levelperm_head>99 else dc_limit70.get('limitcon40') or 0,
-                                limit70= limit_max if levelperm_head>99 else dc_limit70.get('limitcon70') or 0
-                                )
+                    if levelperm_sel == 70:
 
-                    # Верификация введенных значений для levelperm_sel = 70
-                    if dc_clean.limit30 < dc_clean.used30 + dc_cleaned['limitcon']:
-                        errors['limitcon'] = 'Превышен лимит подключений'
+                        dc_clean70 = self.get_limit_used(70)
 
-                    if dc_clean.limit40 < dc_clean.used40 + dc_cleaned['limitcon40'] :
-                        errors['limitcon40'] = 'Превышен лимит подключений'
+                        # Верификация введенных значений для levelperm_sel = 70
+                        if dc_clean70.limit30 < dc_clean70.used30 + dc_cleaned['limitcon']:
+                            errors['limitcon'] = 'Превышен лимит подключений'
 
-                    if dc_cleaned.get('limitcon70') and (dc_clean.limit70 < (dc_clean.used70 + dc_cleaned['limitcon70'])):
-                            errors['limitcon70'] = 'Превышен лимит подключений'
+                        if dc_clean70.limit40 < dc_clean70.used40 + dc_cleaned['limitcon40'] :
+                            errors['limitcon40'] = 'Превышен лимит подключений'
+
+                        if dc_cleaned.get('limitcon70') and (dc_clean70.limit70 < (dc_clean70.used70 + dc_cleaned['limitcon70'])):
+                                errors['limitcon70'] = 'Превышен лимит подключений'
 
         if errors:
             raise ValidationError(errors)
@@ -423,23 +464,28 @@ class UpdStatus_userForm(forms.Form):
             levelperm_user_base = type_status_user(user_modf).levelperm
 
             # Предварительное заполнение dict for update model advUser
+            status_id = dc_clean['status'].pk
+
             dc_servproc = dict(
                                user_modf=user_modf.username, 
-                               status_id=dc_clean['status'].pk)
-
+                               status_id=status_id,
+                               status = status_id
+                               )
 
             js_struct = Com_proc_advuser.get_js_struct(user_modf)
             self.clear_data_status(js_struct)  # Удаление всех данных, связанных со status.*
 
+            advData = Com_proc_advuser.get_advData(user_modf)
+            self.clear_data_status(advData) # обнуление данных, связанных со status.*
+            
+            # Обновление данных по status
+            advData.update(dict(status=status_id, status_id=status_id))
+            dc_servproc['advData'] = advData
 
             # Блок подготовки данных для сохранения изменений в БД
             if levelperm_sel < levelperm_user_base: # Понижение привелигий
 
-                advData = Com_proc_advuser.get_advData(user_modf)
-                self.clear_data_status(advData) # обнуление данных status.*
-
                 user_head70 = Com_proc_advuser.get_head70_user(user_modf).username
-
 
                 if levelperm_sel == 40:
                     js_struct['limitcon'] = dc_clean['limitcon30']
@@ -450,12 +496,10 @@ class UpdStatus_userForm(forms.Form):
                         lst = [70,40,30]
                     else:
                         lst = [70,40,30,20,10]
-
+                
                 dc_servproc['js_struct'] = js_struct
                 dc_servproc['lst'] = lst
-                dc_servproc['advData'] = advData
                 dc_servproc['user_head'] = user_head70 # рукГруппы на кого переводить структуру
-
                 
                 res_proc = self.save_status_resume_into_db(dc_servproc)
 
@@ -701,10 +745,10 @@ class Modf_prof_byHeaderForm(Base_profForm):
     ageGroup    = forms.IntegerField(label='Возраст',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) ) 
      
-    status      = forms.ModelChoiceField(label='Статус', 
-                    widget=forms.Select(attrs={"class":"form-control"}),
-                    empty_label='--- Выберите статус ---',
-                    queryset = SprStatus.objects.order_by('levelperm').filter(levelperm__gt=10, levelperm__lt=100).exclude(status='proj-sadm') )
+    #status      = forms.ModelChoiceField(label='Статус', 
+    #                widget=forms.Select(attrs={"class":"form-control"}),
+    #                empty_label='--- Выберите статус ---',
+    #                queryset = SprStatus.objects.order_by('levelperm').filter(levelperm__gt=10, levelperm__lt=100).exclude(status='proj-sadm') )
 
 
     def save(self, arg_username, arg_parentuser): 
@@ -713,23 +757,9 @@ class Modf_prof_byHeaderForm(Base_profForm):
         arg_parentuser для доступа к значению pswcl на уровне рукГруппы 
         """
 
-        from app.models import spr_fields_models
         from app.com_serv_dbase.serv_modf_profil import serv_add_profil    
 
-        def set_limitcon(levelperm:int):
-            """ Инициализация значения limitcon """
-            nonlocal cd_dict
-
-            limitcon = spr_fields_models.get_limitcon40(levelperm) 
-            if limitcon == 0 :
-                run_raise('form.AddProf_memberForm: Нет данных limitcon')
-
-        # --------------------------------------------------------------
-
-
         res_proc = Res_proc();
-        s_errDown = 'Резкое понижение статуса. Обработка остановлена'
-        s_errUp = 'Резкое повышение статуса. Обработка остановлена'
 
         try:
 
@@ -738,39 +768,12 @@ class Modf_prof_byHeaderForm(Base_profForm):
                 run_raise('Сбой обработки профиля: пользователь не определен' , showMes=True) 
 
             cd_dict = self.cleaned_data
-
-            statusID = cd_dict.get('status').pk
-            levelperm = Com_proc_sprstatus.get_levelperm(statusID)
-
-            type_status_base = type_status_user(user)
-            statusID_base = type_status_base.statusID
-            levelperm_base = type_status_base.levelperm
-
-            if levelperm_base == 70:    # Резкое понижение статуса допустимо на уровень 40
-                if levelperm < 40:
-                    run_raise(s_errDown, showMes=True)
-
-            elif levelperm_base == 40:  # Резкое понижение статуса допустимо на уровень 30
-                if levelperm < 30:      
-                    run_raise(s_errDown, showMes=True)
-
-            else:
-                if levelperm_base == 20 and levelperm > 30: # Резкое повышение статуса только на уровень 30
-                    run_raise(s_errUp, shwoMes=True)
-                if levelperm_base == 30 and levelperm > 40: # Резкое повышение статуса только на уровень 40
-                    run_raise(s_errUp, shwoMes=True)
-
-            # Обработка понижения статуса 
-
-            # Инициализация limitcon повышение привилегий 
-            if levelperm_base == 40 and levelperm == 70 :
-                set_limitcon(levelperm)
-
-            # Инициализация limitcon при понижении привилегий 
-            if levelperm_base == 70 and levelperm == 40 :
-                set_limitcon(levelperm)
-                
                        
+            type_status = type_status_user(user)
+            status_id = type_status.statusID
+
+            cd_dict['status_id'] = status_id
+
             pswcl = res_proc.FN_get_val_dict(cd_dict,'pswcl')
             logincl = res_proc.FN_get_val_dict(cd_dict,'logincl')
 
@@ -782,12 +785,7 @@ class Modf_prof_byHeaderForm(Base_profForm):
                 logincl = getLogin_cl()
                 cd_dict['logincl'] = logincl
 
-            cd_dict.update(dict(
-                               username = user.username,
-                               status_id= statusID,
-                               status= statusID
-                                )
-                        )
+            cd_dict['username'] = user.username
 
             # удаление пробелов. Для подстраховки 
             cd_dict = clear_space(cd_dict)

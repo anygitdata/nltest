@@ -295,6 +295,7 @@ class Com_proc_advuser:
         except:
             return None
 
+
     # Руководитель группы гостВхода, клиента, менеджера
     # Используется для пользователй с уровнемДоступа менее 40 
     # return res_proc.res_model руководитель группы 
@@ -305,7 +306,8 @@ class Com_proc_advuser:
     file: tests/advuser/serv_advuser/test_serv_advuser.json
     """
     @classmethod
-    def get_head_user(cls, user):        
+    def get_head_user(cls, user)->Res_proc:  
+        """ Get head user or None """
         from .serv_typestatus import type_status_user
 
         res_proc = Res_proc()
@@ -369,7 +371,7 @@ class Com_proc_advuser:
     """
     @classmethod
     def get_user_head(cls)->User:        
-        
+        """ return User руководитель проекта """
         rowHead = cls.AdvUser.objects.filter(status__levelperm=100)
         if rowHead.exists():
             rowHead = rowHead.first()
@@ -600,7 +602,7 @@ class Com_proc_advuser:
                 if not res_parentuser:
                     cls._run_raise(f'{s_err} parentuser не определен')
 
-                parent_user_login = res_parentuser.any_str
+                parent_user_login = res_parentuser.username
 
             out_dict = dict()
             if cls.get_advData_user(parent_user_login, out_dict, modf_form ):
@@ -911,46 +913,31 @@ class Com_proc_advuser:
         file: tests/advuser/serv_advuser/test_serv_advuser.json
     """
     @classmethod
-    def get_parentuser(cls, arg_user):
+    def get_parentuser(cls, arg_user)->str:
+        """ return User for parentuser or None """
 
-        s_err = 'get_parentuser'
+        from .models import AdvUser
+
         res_proc = Res_proc()
 
         try:
             user = getUser(arg_user)
             if user is None:
-                cls._run_raise(f'{s_err} arg_user не определен')
+                cls._run_raise(f'get_parentuser: arg_user не определен')
 
             if user.is_superuser:
                 parentuser = cls.get_user_head()
                 res_proc.any_str = parentuser.username
                 return res_proc
 
-            res_advUser = servAdvUser_get_advUser(user)
-            if not res_advUser:
-                cls._run_raise(f'{s_err} нет данных по AdvUser')
+            row = AdvUser.objects.get(pk=user) 
 
-            advuser = res_advUser.res_model
-            parentuser = advuser.parentuser
-
-            # Проверка, что login существует 
-            user_parentuser = getUser(parentuser)
-            if user_parentuser is None:
-                cls._run_raise(f'{s_err} parentuser не найден в справочнике auth_user')
-
-            # Проверка соответствия в advData[parentuser] == advuser.parentuser
-            advData = json.loads(advuser.advData)
-
-            if user_parentuser.username == advData['parentuser']:
-                res_proc.any_str = user_parentuser.username
-
-            else:
-                cls._run_raise(f'{s_err} advData[parentuser] != advuser.parentuser')
-
+            parentuser = row.parentuser
+            parentuser = getUser(parentuser) 
 
         except Exception as ex:
-            res_proc.error = ex
+            return None
 
-        return res_proc
+        return parentuser
 
 

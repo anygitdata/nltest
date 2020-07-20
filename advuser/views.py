@@ -153,13 +153,12 @@ def UpdStatus_user(request):
 
             if levelperm_user == 100 :
                 return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус руководителя проекта постоянный')
+            
+            parentuser = Com_proc_advuser.get_parentuser(user)
+            if parentuser.username != user_master.username:            
+                return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
 
-            # ИзмСтатуса для профиля с уровнем levelperm=30 
-            if levelperm_user==30 and type_status_master.levelperm ==70:
-                head70_user = Com_proc_advuser.get_head70_user(user)
-                if head70_user.username != user_master.username:
-                    return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
-        
+
         # Конец блока верификации 
 
         # Значение as default for levelperm== 40 кол-во менеджеров 
