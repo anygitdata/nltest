@@ -301,34 +301,41 @@ class UpdStatus_userForm(forms.Form):
     list_fields_status = []   # список используемых полей для status.*
 
     def clear_data_status(self, arg_dict:dict):
-            """ Удаление данных, связанных с status.* 
-            Использование для обнуления из js_struct and advData
-            """
-
-            if not self.list_fields_status:
-                # Заполнение self.list_fields_status
-                self.list_fields_status = self.load_list_fields_status()  
-
-            for key in self.list_fields_status:
-                if arg_dict.get(key):
-                    del arg_dict[key]
-    
-
-    @classmethod
-    def load_list_fields_status(cls):
-        """ Загрузка списка, используемых полей из справочника spr_fields_models
-        Заполнение self.list_fields_status 
+        """ Удаление данных, связанных с status.* 
+            обнуление данных js_struct and advData, входящих в структуру status.*
         """
         from app.models import spr_fields_models as fields
 
-        row = fields.objects.filter(id_key=0)
-        if row.exists():
-            row_fields = row.first()
-        else:
-            run_raise('Сервер отклонил запрос', showMes=True)
+        if not self.list_fields_status:
+            # Заполнение self.list_fields_status
+            row = fields.objects.filter(id_key=0)
+            if row.exists():
+                row_fields = row.first()
+            else:
+                run_raise('Сервер отклонил запрос', showMes=True)
 
-        dc_fields = json.loads(row_fields.js_data)
-        return dc_fields['fields']['status']
+            dc_fields = json.loads(row_fields.js_data)
+            self.list_fields_status = dc_fields['fields']['status']
+
+        for key in self.list_fields_status:
+            if arg_dict.get(key):
+                del arg_dict[key]
+    
+
+    #@classmethod
+    #def load_list_fields_status(cls):
+    #    """ Загрузка списка, используемых полей из справочника spr_fields_models
+    #    Заполнение self.list_fields_status 
+    #    """
+
+    #    row = fields.objects.filter(id_key=0)
+    #    if row.exists():
+    #        row_fields = row.first()
+    #    else:
+    #        run_raise('Сервер отклонил запрос', showMes=True)
+
+    #    dc_fields = json.loads(row_fields.js_data)
+    #    return dc_fields['fields']['status']
    
 
 
