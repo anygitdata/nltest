@@ -96,8 +96,8 @@ def sp_modf_data (arg_dc:dict, serv_proc='sp_serv_add_profil'):
             res_data = res_call_dc['data']
             dc = dict(mes=res_call_dc['mes'], data_mes=res_data['mes'] )
 
-            res_proc.res = True
             res_proc.res_dict = dc
+            res_proc.res = True
 
 
     except Exception as ex:

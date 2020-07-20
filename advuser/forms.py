@@ -222,8 +222,11 @@ class UpdStatus_userForm(forms.Form):
         user_modf = getUser(self.dc_param_verf.user_modf)
         status_head = type_status_user(user_head)
         
+        status_user_base = type_status_user(self.dc_param_verf.user_modf)
+        levelperm_user_base = status_user_base.levelperm
+
         levelperm_sel = dc_cleaned['status'].levelperm
-        levelperm_head = status_head.levelperm
+        levelperm_head = status_head.levelperm        
 
 
         if levelperm_sel > levelperm_head:
@@ -240,6 +243,20 @@ class UpdStatus_userForm(forms.Form):
                 errors['limitcon40'] = 'Укажите кол-во подключений рукГрупп'
 
 
+        # верификация резкого повышения/понижения levelperm
+        num = 1
+        dc_levelperm = {}
+        for item in (20, 30, 40, 70) :
+            dc = {item:num }
+            dc_levelperm.update(dc)
+            num += 1
+
+        div = dc_levelperm[levelperm_sel] - dc_levelperm[levelperm_user_base]
+        if  abs(div) > 1:
+            errors['status'] = 'Изменение статуса более чем на один порядок - отклонено'
+
+
+        # верификация на уровне levelperm
         if not errors:
             limit_max = sys.maxsize
 
@@ -289,7 +306,7 @@ class UpdStatus_userForm(forms.Form):
                     if dc_clean.limit40 < dc_clean.used40 + dc_cleaned['limitcon40'] :
                         errors['limitcon40'] = 'Превышен лимит подключений'
 
-                    if dc_cleaned.get('limitcon70') and (dc_clean.limit70 < (dc_clean.used70 + dc_cleaned['limitcont70'])):
+                    if dc_cleaned.get('limitcon70') and (dc_clean.limit70 < (dc_clean.used70 + dc_cleaned['limitcon70'])):
                             errors['limitcon70'] = 'Превышен лимит подключений'
 
         if errors:
@@ -298,7 +315,9 @@ class UpdStatus_userForm(forms.Form):
     # используются в процедуре clean(self)
     param_verf = namedtuple("param_verf", "user_head user_modf")
     dc_param_verf = None
-    list_fields_status = []   # список используемых полей для status.*
+    list_fields_status = []   # используется в clear_data_status список используемых полей для status.*
+
+    # ----------- Конец блока локальных переменных -------------
 
     def clear_data_status(self, arg_dict:dict):
         """ Удаление данных, связанных с status.* 
@@ -320,23 +339,6 @@ class UpdStatus_userForm(forms.Form):
         for key in self.list_fields_status:
             if arg_dict.get(key):
                 del arg_dict[key]
-    
-
-    #@classmethod
-    #def load_list_fields_status(cls):
-    #    """ Загрузка списка, используемых полей из справочника spr_fields_models
-    #    Заполнение self.list_fields_status 
-    #    """
-
-    #    row = fields.objects.filter(id_key=0)
-    #    if row.exists():
-    #        row_fields = row.first()
-    #    else:
-    #        run_raise('Сервер отклонил запрос', showMes=True)
-
-    #    dc_fields = json.loads(row_fields.js_data)
-    #    return dc_fields['fields']['status']
-   
 
 
     def save_status_into_db(self, arg_dict:dict, arg_user:User):
@@ -349,11 +351,17 @@ class UpdStatus_userForm(forms.Form):
             rec = AdvUser.objects.get(pk=arg_user)
 
             js_struct = arg_dict['js_struct']
+            status_id = arg_dict['status_id']
 
             advData = json.loads(rec.advData)  
             self.clear_data_status(advData)     # очистить от прежних значений status.*
         
             advData.update(js_struct)   # Обновление новыми значениями status.*
+
+            advData.update(dict(
+                status_id=status_id, 
+                status=status_id))
+            rec.status_id = status_id
 
             rec.js_struct = json.dumps(js_struct, ensure_ascii=False)
             rec.advData = json.dumps(advData, ensure_ascii=False)
@@ -389,7 +397,9 @@ class UpdStatus_userForm(forms.Form):
 
 
     def save_data_status(self, arg_head, arg_session)->Res_proc:
-        """ Процедура на уровне class -> сохранение изменений status_id/limitcon """
+        """ Процедура на уровне class -> сохранение изменений status_id/limitcon 
+        вызывается из views.UpdStatus_user url:updpermuser
+        """
 
         # Структура arg_session
         #lst_lvperm = lst_lvperm,
@@ -416,22 +426,14 @@ class UpdStatus_userForm(forms.Form):
             dc_servproc = dict(
                                user_modf=user_modf.username, 
                                status_id=dc_clean['status'].pk)
-            num = 1
-            dc_levelperm = {}
-            for item in (20, 30, 40, 70) :
-                dc = {item:num }
-                dc_levelperm.update(dc)
-                num += 1
-
-            div = dc_levelperm[levelperm_sel] - dc_levelperm[levelperm_user_base]
-            if  abs(div) > 1:
-                run_raise('Изменение статуса более чем на один порядок - отклонено',showMes=True)
 
 
             js_struct = Com_proc_advuser.get_js_struct(user_modf)
             self.clear_data_status(js_struct)  # Удаление всех данных, связанных со status.*
 
-            if div < 0: # Понижение привелигий
+
+            # Блок подготовки данных для сохранения изменений в БД
+            if levelperm_sel < levelperm_user_base: # Понижение привелигий
 
                 advData = Com_proc_advuser.get_advData(user_modf)
                 self.clear_data_status(advData) # обнуление данных status.*
@@ -454,14 +456,14 @@ class UpdStatus_userForm(forms.Form):
                 dc_servproc['advData'] = advData
                 dc_servproc['user_head'] = user_head70 # рукГруппы на кого переводить структуру
 
-                # Обновление подчиненной структуры через сервПроцедуру
-                # res_proc.res_dict  содержит ВСю инфу по результатам
-                # res_proc.res_dict{mes=... , data_mes=...}
+                
                 res_proc = self.save_status_resume_into_db(dc_servproc)
 
-                # ---------- Конец контента обработки понижения статуса
+            # ---------- Конец контента обработки понижения статуса
 
-            if div > 0:                    
+
+            if levelperm_sel > levelperm_user_base:
+
                 if levelperm_sel == 40:
                     js_struct['limitcon']= dc_clean['limitcon30']
 
@@ -469,11 +471,13 @@ class UpdStatus_userForm(forms.Form):
                     js_struct.update(dict(
                         limitcon=dc_clean['limitcon'],
                         limitcon40=dc_clean['limitcon40'],
-                        limitcon70=dc_clean('limitcon70') or 0,
-                        user_head = user_head   # рукГруппы проводивший изменения профиля
+                        limitcon70=dc_clean.get('limitcon70') or 0,
+                        user_head = user_head.username   # рукГруппы проводивший изменения профиля
                         ))
 
                 dc_servproc['js_struct'] = js_struct                
+
+                # Обновление данных через сервис django
                 res_sp = self.save_status_into_db(dc_servproc, user_modf)
                 if not res_sp:
                     res_proc.error = res_sp.error

@@ -81,6 +81,17 @@ def UpdStatus_user(request):
     Изменения осуществляются только рукГрупп
     """
 
+    def return_render(arg_form:UpdStatus_userForm, arg_dc:dict)->dict:
+        """ Локальная процедура для запуска render:
+        arg_form: UpdStatus_userForm
+        arg_dc: dc_session = request.session['UpdStatus_user']
+        return render with cont form and dc_session """
+        cont = dict(form=arg_form)
+        cont.update(arg_dc)
+
+        return render(request,'advuser/upd_status_user.html', cont)
+
+
     if not cache.has_key('UpdStatus_user'): 
         return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Параметры запроса устарели')
 
@@ -95,18 +106,29 @@ def UpdStatus_user(request):
         form = UpdStatus_userForm(request.POST)
         dc_session = request.session['UpdStatus_user']
 
-        form.dc_param_verf = form.param_verf(user_head=user, user_modf=dc_session['upd_username'])
+        # изициализация локальных полей для процедуры clear()
+        user_head = getUser(request.user.username)
+        form.dc_param_verf = form.param_verf(user_head=user_head.username, 
+                                        user_modf=dc_session['upd_username'])
 
         if form.is_valid():
             user = request.user;
             res_save = form.save_data_status(user, dc_session)
 
+            if res_save:
+                mes = res_save.res_dict['data_mes']
+                dict_cache = dict(username=dc_session['upd_username'], mes=mes)                
+                cache.set('Success_register_user', dict_cache)
+                del request.session['UpdStatus_user']
 
-        else:
-            cont = dict(form=form)
-            cont.update(dc_session)
+                return redirect('ver_profil')  # переход на view Success_register_user
 
-            return render(request, 'advuser/upd_status_user.html', cont)
+            else: 
+                return return_render(form, dc_session)
+
+        else:  # сообщения из процедуры clean() 
+            return return_render(form, dc_session)
+
 
     else: # Обработка запроса GET 
         
@@ -150,17 +172,18 @@ def UpdStatus_user(request):
         dc_limit70 = spr_fields_models.get_limitcon70()     
         dc_limit70 = dc_limit70.res_dict
         
+        # инициализация переменных status.* для user_modf 
         res_dict = dict() 
-        if levelperm_user == 40:
+        if levelperm_user == 40:   # если уровень доступа был 40 
             res_dict['limitcon30'] = dc_jsstruct.get('limitcon') or 0
             res_dict.update(dc_limit70 ) # значения default for levelperm=70
 
-        if levelperm_user == 70:
+        if levelperm_user == 70:  # если уровень доступа был 70 -> максНабор данных
             res_dict.update(dict(
-                                limitcon=dc_jsstruct('limitcon') or 0 ,
-                                limitcon40=dc_jsstruct('limitcon40') or 0,
-                                limitcon70=dc_jsstruct('limitcon70') or 0,
-                                limitcon30=limitcon30   # default for levelperm=40
+                                limitcon    = dc_jsstruct.get('limitcon') or 0 ,
+                                limitcon40  = dc_jsstruct.get('limitcon40') or 0,
+                                limitcon70  = dc_jsstruct.get('limitcon70') or 0,
+                                limitcon30  = limitcon30   # default for levelperm=40
                                  ))
 
         lst_lvperm = Com_proc_sprstatus.get_list_levelperm().res_list
@@ -168,8 +191,7 @@ def UpdStatus_user(request):
         s_limit = json.dumps(res_dict, ensure_ascii=True)
 
         dc_datauser = Com_proc_advuser.get_advData(user)
-        dc_session = dict( 
-                       lst_lvperm = lst_lvperm,
+        dc_session = dict( lst_lvperm = lst_lvperm,
                        s_limit=s_limit,
                        upd_username=dc_datauser['username'],
                        upd_full_name=dc_datauser['full_name'],
@@ -178,21 +200,20 @@ def UpdStatus_user(request):
 
         request.session['UpdStatus_user'] = dc_session  
 
-        dc_initial = dict(status=type_status.statusID, limitcon=dc_datauser.get('limitcon') or 0)
+        # инициализация limitcon30,  limitcon,limitcon40,limitcon70 
+        # через upd_status_user_01.js после загрузки контента html
+        dc_initial = dict(status=type_status.statusID)
         form = UpdStatus_userForm(initial=dc_initial)
-        
-        res_cont = dict(form=form)
-        res_cont.update(dc_session)
 
-        return render(request, 'advuser/upd_status_user.html', res_cont)
+        return return_render(form, dc_session)
 
 
-"""
-url: updpswuser 
-"""
+
 @login_required
 def UpdPassword_user(request):
-    """ Контроллер изменения пароля участника проекта """
+    """ Контроллер изменения пароля участника проекта 
+    url:updpswuser
+    """
     
     from .serv_typestatus import type_status_user
     from .serv_sprstatus import Com_proc_sprstatus
@@ -343,7 +364,6 @@ def UpdPsw_byUser(request):
         res_cont.update(dc_session)
 
         return render (request, 'advuser/upd_password_by_user.html' , res_cont)
-    
 
 
 
@@ -733,7 +753,10 @@ url: ver_profil/
 """
 @login_required
 def Success_register_user(request):    
-    """ Подтверждение успешной регистрации """
+    """ Подтверждение успешной регистрации
+    Изменений профиля 
+    изменений levelperm status.*
+    """
 
     if 'Success_register_user' not in cache:
         return redirect('/')  # На случай, если делается попытка перезапуска
@@ -753,16 +776,15 @@ def Success_register_user(request):
         return redirect_empty(arg_title='Профиль')
 
 
-"""
-url:  listprofils
-name: listprofils
-------------------------
-Табличная форма показа менеджеров
-
-"""
-""
 @login_required
 def List_profils(request):
+    """
+    url:  listprofils
+    name: listprofils
+    ------------------------
+    Табличная форма показа менеджеров
+    """
+
     from .modify_models import get_list_prof_memb    
     from advuser.serv_typestatus import type_status_user
 

@@ -45,10 +45,16 @@
 
             {% for field in form.visible_fields %}
 
-
-
-            <div class="row col-12 mt-2 {{field.name}}">
-
+            <div class="row col-12 {{field.name}}">
+               {% if field.errors %}
+                    <div class="w-100">
+                        <ul style="color: red">
+                            {% for error in field.errors %}
+                            <li><em>{{error|escape}}</em></li>
+                            {%endfor%}
+                        </ul>
+                    </div>
+                {%endif%}
 
                 <div class="col-4 text-right pt-2 pr-2 font-weight-bold">
                     {{field.label}}
