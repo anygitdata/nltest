@@ -26,9 +26,9 @@ class Com_proc_sprstatus:
 
 
     @classmethod
-    def get_list_levelperm(cls):
+    def get_list_levelperm(cls)->Res_proc:
         """ Выборка значений status_id, levelperm по ВСЕМУ справочнику SprStatus
-        return list( dict(lvperm=Number, status=str), ... )
+        return Res_proc.res_list = list( dict(lvperm=Number, status=str), ... )
         """
         from .models import SprStatus
 

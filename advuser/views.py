@@ -154,7 +154,7 @@ def UpdStatus_user(request):
             if levelperm_user == 100 :
                 return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Статус руководителя проекта постоянный')
             
-            parentuser = Com_proc_advuser.get_parentuser(user)
+            parentuser = Com_proc_advuser.get_parentuser_02(user)
             if parentuser.username != user_master.username:            
                 return redirect_empty(arg_title='Сервер отклонил обработку', arg_mes='Руководитель группы может изменять профиль только своей структуры')
 

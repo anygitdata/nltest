@@ -598,7 +598,7 @@ class Com_proc_advuser:
                 parent_user_login = parentuser.username
 
             else:
-                res_parentuser = cls.get_parentuser(user)
+                res_parentuser = cls.get_parentuser_02(user)
                 if not res_parentuser:
                     cls._run_raise(f'{s_err} parentuser не определен')
 
@@ -913,8 +913,10 @@ class Com_proc_advuser:
         file: tests/advuser/serv_advuser/test_serv_advuser.json
     """
     @classmethod
-    def get_parentuser(cls, arg_user)->str:
-        """ return User for parentuser or None """
+    def get_parentuser_02(cls, arg_user)->User:
+        """ return User for parentuser or None
+        Отличается от get_parentuser -> Res_proc.any_str
+        """
 
         from .models import AdvUser
 
@@ -939,5 +941,51 @@ class Com_proc_advuser:
             return None
 
         return parentuser
+
+
+    @classmethod
+    def get_parentuser(cls, arg_user)->str:
+        """ Извлекает строку User.username 
+        return Res_proc.any_str
+        """
+        s_err = 'get_parentuser'
+        res_proc = Res_proc()
+
+        try:
+            user = getUser(arg_user)
+            if user is None:
+                cls._run_raise(f'{s_err} arg_user не определен')
+
+            if user.is_superuser:
+                parentuser = cls.get_user_head()
+                res_proc.any_str = parentuser.username
+                return res_proc
+
+            res_advUser = servAdvUser_get_advUser(user)
+            if not res_advUser:
+                cls._run_raise(f'{s_err} нет данных по AdvUser')
+
+            advuser = res_advUser.res_model
+            parentuser = advuser.parentuser
+
+            # Проверка, что login существует 
+            user_parentuser = getUser(parentuser)
+            if user_parentuser is None:
+                cls._run_raise(f'{s_err} parentuser не найден в справочнике auth_user')
+
+            # Проверка соответствия в advData[parentuser] == advuser.parentuser
+            advData = json.loads(advuser.advData)
+
+            if user_parentuser.username == advData['parentuser']:
+                res_proc.any_str = user_parentuser.username
+
+            else:
+                cls._run_raise(f'{s_err} advData[parentuser] != advuser.parentuser')
+
+
+        except Exception as ex:
+            res_proc.error = ex
+
+        return res_proc
 
 

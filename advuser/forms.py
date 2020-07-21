@@ -207,6 +207,7 @@ class UpdStatus_userForm(forms.Form):
         from collections import namedtuple
         from app.models import spr_fields_models as fields
         import sys
+        from .serv_sprstatus import Com_proc_sprstatus
 
         res_clean    = namedtuple("res_clean", "used30,used40,used70,limit30,limit40,limit70")
         res_clean40  = namedtuple("res_clean40", "used30 limit30")
@@ -231,12 +232,22 @@ class UpdStatus_userForm(forms.Form):
             
             res = dc_clean40
 
-        if levelperm_head < 100:
-            row30 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=30).exclude(pk=user_modf)
+        if levelperm_head <= 105:
+            dc_status = Com_proc_sprstatus.get_list_levelperm()
+            dc_status = dc_status.res_list
 
-            row40 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=40).exclude(pk=user_modf)
+            status30 = [ item for item in dc_status if item['lvperm'] == 30][0]['status']
+            status40 = [ item for item in dc_status if item['lvperm'] == 40][0]['status']
+            status70 = [ item for item in dc_status if item['lvperm'] == 70][0]['status']
 
-            row70 = AdvUser.objects.filter(parentuser=user_head.username, status_levelperm=70).exclude(pk=user_modf)
+            row30 = AdvUser.objects.filter(parentuser=user_head.username, 
+                                status=status30 ).exclude(pk=user_modf)
+
+            row40 = AdvUser.objects.filter(parentuser=user_head.username, 
+                                status=status40).exclude(pk=user_modf)
+
+            row70 = AdvUser.objects.filter(parentuser=user_head.username, 
+                                status=status70).exclude(pk=user_modf)
 
             dc_limit70 = fields.get_limitcon70()     
             dc_limit70 = dc_limit70.res_dict
@@ -338,7 +349,7 @@ class UpdStatus_userForm(forms.Form):
 
                     if levelperm_sel == 70:
 
-                        dc_clean70 = self.get_limit_used(70)
+                        dc_clean70 = self.get_limit_used(70, dc_arg)
 
                         # Верификация введенных значений для levelperm_sel = 70
                         if dc_clean70.limit30 < dc_clean70.used30 + dc_cleaned['limitcon']:
@@ -383,7 +394,9 @@ class UpdStatus_userForm(forms.Form):
 
 
     def save_status_into_db(self, arg_dict:dict, arg_user:User):
-        """ Запись изменений status в БД увеличение статуса """
+        """ Запись изменений status в БД увеличение статуса 
+        или изменении структуры status.*
+        """
 
         res_proc = Res_proc()
 
@@ -415,7 +428,7 @@ class UpdStatus_userForm(forms.Form):
             res_proc.error = ex
 
         return res_proc
-
+    
 
     def save_status_resume_into_db(self, arg_dict:dict):
         """ Запись изменений статуса в БД при понижении статуса  """
@@ -506,7 +519,7 @@ class UpdStatus_userForm(forms.Form):
             # ---------- Конец контента обработки понижения статуса
 
 
-            if levelperm_sel > levelperm_user_base:
+            if levelperm_sel > levelperm_user_base or levelperm_sel == levelperm_user_base :
 
                 if levelperm_sel == 40:
                     js_struct['limitcon']= dc_clean['limitcon30']
@@ -529,6 +542,7 @@ class UpdStatus_userForm(forms.Form):
                 res_proc.res = True
                 res_proc.res_dict = dict(mes='Обновлен статус', 
                                          data_mes=f'Статус {user_modf} обновлен ')
+            
 
         except Exception as ex:
             res_proc.error = ex
