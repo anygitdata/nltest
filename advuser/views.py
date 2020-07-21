@@ -108,6 +108,7 @@ def UpdStatus_user(request):
 
         # изициализация локальных полей для процедуры clear()
         user_head = getUser(request.user.username)
+        
         form.dc_param_verf = form.param_verf(user_head=user_head.username, 
                                         user_modf=dc_session['upd_username'])
 
