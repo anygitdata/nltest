@@ -639,6 +639,40 @@ class Base_profForm(forms.Form):
                     help_text = 'Важно, для отбора подаваемой информации!',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) )  
 
+    def clean(self):
+        from app.com_data.any_mixin import CreateUser_ext
+        
+        
+        super().clean()
+        errors = {}
+        
+        dc_cleaned = self.cleaned_data;
+        loc_BaseUserManager = CreateUser_ext._BaseUserManager
+
+
+        if not dc_cleaned.get('first_name'):
+            errors['first_name'] = 'Не заполнено поле "Имя"'
+
+        if not dc_cleaned.get('last_name'):
+            errors['last_name'] = 'Не заполнено поле "Фамилия"'
+            
+        if not dc_cleaned.get('phone'):
+            errors['phone'] = 'Не заполнено поле Телефон'
+
+        if not dc_cleaned.get('post'):
+            errors['post'] = 'Не заполнено поле Почтовый индекс'
+        
+        if not dc_cleaned.get('email') and not dc_cleaned.get('phone'):
+            errors['phone'] = 'Введите email или телефон для обрСвязи'
+
+        if not dc_cleaned.get('email') and dc_cleaned.get('sendMes'):
+            errors['sendMes'] = 'Для получения сообщений введите email'
+    
+
+        if errors:
+            raise ValidationError(errors)  
+
+
     """
     Процедура создания шаблона dict для добавления qust-simp
     return res_proc.res_dict 
@@ -752,16 +786,18 @@ class Base_profForm(forms.Form):
             cd_dict = self.cleaned_data
             s_error = 'ValueError##advuser.form.Base_profilForm.save_upd'
 
-            statusID = Com_proc_sprstatus.get_statusID_user(arg_user)
+            user_head = getUser(arg_parentuser)
+            js_struct = Com_proc_advuser.get_js_struct(user)
 
-            cd_dict.update(
-                dict(username=arg_user.username,
-                     # pswcl=dict_user.get('pswcl') or '',
-                     # idcomp=cd_dict.get('idcomp') or 'empty',                    
-                     status_id=statusID,
-                     status = statusID,
-                     parentuser=arg_parentuser.username
-                     ))
+            if not js_struct.get('pswcl'):
+                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
+                js_struct['pswcl'] = js_struct_head['pswcl']
+            if not js_struct.get('logincl'):
+                js_struct['logincl'] = getLogin_cl()
+
+
+            cd_dict['js_struct'] = js_struct
+            cd_dict['username'] = user.username
             
             cd_dict = clear_space(cd_dict)
             cd_dict = upd_space_into_empty(cd_dict)                        
@@ -815,9 +851,7 @@ class Modf_prof_byHeaderForm(Base_profForm):
 
         if not dc_cleaned.get('post'):
             errors['post'] = 'Не заполнено поле Почтовый индекс'
-        else:
-            # Проверка ввода элПочты 
-            self.cleaned_data['email'] = loc_BaseUserManager.Normalize_email(dc_cleaned['email'])
+        
         
         if errors:
             raise ValidationError(errors)        
@@ -903,9 +937,7 @@ class Modf_prof_byuserForm(Base_profForm):
 
         if not dc_cleaned.get('post'):
             errors['post'] = 'Не заполнено поле Почтовый индекс'
-        else:
-            # Проверка ввода элПочты 
-            self.cleaned_data['email'] = loc_BaseUserManager.Normalize_email(dc_cleaned['email'])
+       
         
         if errors:
             raise ValidationError(errors)    
@@ -951,7 +983,6 @@ class Modf_prof_byuserForm(Base_profForm):
             res_proc.error = ex;
 
         return res_proc
-
 
 
 # Добавление профиля участника проекта
