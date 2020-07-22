@@ -875,7 +875,40 @@ class Modf_prof_byuserForm(Base_profForm):
     """ Для пользователй проекта -> измПрофиля """
     ageGroup    = forms.IntegerField(label='Возраст',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) ) 
-   
+    field_order = ['first_name','last_name','email','phone','idcomp','post','pol','ageGroup']
+
+
+    def clean(self):
+        from app.com_data.any_mixin import CreateUser_ext
+        
+        super().clean()
+        errors = {}
+        
+        dc_cleaned = self.cleaned_data;
+        loc_BaseUserManager = CreateUser_ext._BaseUserManager
+
+
+        # errors['limitcon'] = 'Укажите кол-во подключений менеджеров'
+        if not dc_cleaned.get('first_name'):
+            errors['first_name'] = 'Не заполнено поле "Имя"'
+
+        if not dc_cleaned.get('last_name'):
+            errors['last_name'] = 'Не заполнено поле "Фамилия"'
+
+        if not dc_cleaned.get('email'):
+            errors['email'] = 'Не заполнено поле эл. почты'
+            
+        if not dc_cleaned.get('phone'):
+            errors['phone'] = 'Не заполнено поле Телефон'
+
+        if not dc_cleaned.get('post'):
+            errors['post'] = 'Не заполнено поле Почтовый индекс'
+        else:
+            # Проверка ввода элПочты 
+            self.cleaned_data['email'] = loc_BaseUserManager.Normalize_email(dc_cleaned['email'])
+        
+        if errors:
+            raise ValidationError(errors)    
 
     def save(self, arg_user, arg_parentuser)->Res_proc:
         from app.com_serv_dbase.serv_modf_profil import serv_add_profil
@@ -887,32 +920,23 @@ class Modf_prof_byuserForm(Base_profForm):
         try:
 
             user = getUser(arg_user)
+            user_head = getUser(arg_parentuser)
+
             if user is None:
                 run_raise(s_error + ' Пользователь не найден в БД')
             
             js_struct = Com_proc_advuser.get_js_struct(user)
-
+            
             # Верификация pswcl and logincl 
-            pswcl = res_proc.FN_get_val_dict(cd_dict, 'pswcl')
-            logincl = res_proc.FN_get_val_dict(cd_dict, 'logincl')
-            if pswcl is None:
-                pswcl = Com_proc_advuser.get_val_from_advData(arg_parentuser, 'pswcl')
-                #cd_dict['pswcl'] = pswcl
-                js_struct['pswcl'] = pswcl
+            if not js_struct.get('pswcl'):
+                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
+                js_struct['pswcl'] = js_struct_head['pswcl']
+            if not js_struct.get('logincl'):
+                js_struct['logincl'] = getLogin_cl()
 
-            if logincl is None:
-                logincl = getLogin_cl()
-                js_struct['logincl'] = logincl
-                #cd_dict['logincl'] = logincl
-
-            #statusID = Com_proc_sprstatus.get_statusID_user(user)  
-                       
 
             cd_dict.update(
-	            dict(username=user.username,                        
-			            #status_id=statusID,
-			            #status = statusID,
-			            #parentuser=arg_parentuser.username,
+	            dict(username=user.username,                        			    
                         js_struct = js_struct
 			            ))
 
