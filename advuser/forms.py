@@ -256,38 +256,53 @@ class UpdStatus_userForm(forms.Form):
 
         user = getUser(user_modf)
 
+        
         if arg_levelperm_sel == 40:
             if levelperm_head < 100:
-                row = AdvUser.objects.filter(parentuser=user_head.username, status=status30).exclude(pk=user_modf)
+                row = AdvUser.objects.filter(parentuser=user_head, 
+                                    status=status30).exclude(pk=user)
                             
-                limitcon_used = row.count()
+                used30 = row.count()
+                limit30 = fields.get_limitcon40(40)
+            else:
+                used30 = 0
+                limit30 = limit_max
                 
-                res_limit = use_limit(
-                    used30 = 0 if levelperm_head > 99 else limitcon_used,
-                    limit30 = limit_max if levelperm_head > 99 else fields.get_limitcon40(40)
-                    )
+            res_limit = use_limit(
+                used30 = used30,
+                limit30 = limit30
+                )
 
-            if levelperm_head <= 105:
-                row30 = AdvUser.objects.filter(parentuser=user_head, 
-                                status=status30 ).exclude(pk=user)
-
-                row40 = AdvUser.objects.filter(parentuser=user_head, 
-                                    status=status40).exclude(pk=user)
-
-                row70 = AdvUser.objects.filter(parentuser=user_head, 
-                                    status=status70).exclude(pk=user)
-
+        if arg_levelperm_sel == 70:
+            if levelperm_head < 100:
                 dc_limit70 = fields.get_limitcon70()     
                 dc_limit70 = dc_limit70.res_dict
 
-                res_limit = use_limit(
-                        used30= 0 if levelperm_head>99 else row30.count(), 
-                        limit30= limit_max if levelperm_head>99 else dc_limit70.get('limitcon') or 0,
-                        used40= 0 if levelperm_head>99 else  row40.count(), 
-                        limit40= limit_max if levelperm_head>99 else dc_limit70.get('limitcon40') or 0,
-                        used70= 0 if levelperm_head>99 else  row70.count(),
-                        limit70= limit_max if levelperm_head>99 else dc_limit70.get('limitcon70') or 0
-                        )
+                row30 = AdvUser.objects.filter(parentuser=user_head, 
+                                status=status30 ).exclude(pk=user)
+                row40 = AdvUser.objects.filter(parentuser=user_head, 
+                                    status=status40).exclude(pk=user)
+                row70 = AdvUser.objects.filter(parentuser=user_head, 
+                                    status=status70).exclude(pk=user)
+                used30 = row30.count()
+                used40 = row40.count()
+                used70 = row70.count()
+                limit30 = dc_limit70.get('limitcon') or 0
+                limit40 = dc_limit70.get('limitcon40') or 0
+                limit70 = dc_limit70.get('limitcon70') or 0
+
+            else:
+                used30 = used40 = used70 = 0
+                limit30 = limit40 = limit70 = limit_max
+
+            res_limit = use_limit(
+                    used30= used30, 
+                    limit30= limit30,
+                    used40= used40, 
+                    limit40= limit40,
+                    used70= used70,
+                    limit70= limit70
+                    )
             
 
         return res_limit
