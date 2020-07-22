@@ -296,7 +296,11 @@ def verify_exists_email(email):
 
 
 class CreateUser_ext:
+    """ Класс обработки структуры User """
+
     class _BaseUserManager():
+        """ Встроенный класс дополнительных проверок """
+
         @classmethod
         def Normalize_email(cls, email):
             """

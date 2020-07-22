@@ -251,6 +251,8 @@ class Com_proc_advuser:
     def get_js_struct(cls, arg_user)->dict:
         """ Выборка поля advUser.js_struct
         используется при изменении статуса
+        аргумент:  arg_user
+        ----------------------------------
         return dict or None
         """
         from .models import AdvUser

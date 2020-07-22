@@ -232,6 +232,34 @@ class UpdStatus_userForm(forms.Form):
         import sys
         from .serv_sprstatus import Com_proc_sprstatus
 
+        user_head = self.PR_dc_param_verf.user_head #  dc_cleaned['user_head']
+        user_modf = self.PR_dc_param_verf.user_modf # dc_cleaned['user_modf']
+        user = getUser(user_modf)
+
+        dc_status = Com_proc_sprstatus.get_list_levelperm()
+        dc_status = dc_status.res_list  # Список dict используемых status.levelperm 
+        
+        limit_max = sys.maxsize
+        dc_cleaned = self.cleaned_data;
+
+        # Локальный процедурный контент
+        def loc_get_status(arg_level:int)->str:
+            """ Локальная функция выборки значения из dc_status """
+
+            res = [ item for item in dc_status if item['lvperm'] == arg_level][0]['status']
+            
+            return res;
+
+        def loc_get_used_limit(arg_level:int)->int:
+            """ Локальная функция обработки использованного лимита  """
+
+            status_level = [ item for item in dc_status if item['lvperm'] == arg_level][0]['status']
+            row = AdvUser.objects.filter(parentuser=user_head, 
+                                    status=loc_get_status(arg_level)).exclude(pk=user)
+            return row.count()
+
+        # Конец блока локального процедурного контента 
+
 
         use_limit = namedtuple('use_limit', 
                         'used30 limit30 used40 limit40 used70 limit70', 
@@ -239,30 +267,12 @@ class UpdStatus_userForm(forms.Form):
 
         res_limit = None
 
-        limit_max = sys.maxsize
-        dc_cleaned = self.cleaned_data;
-
-        user_head = self.PR_dc_param_verf.user_head #  dc_cleaned['user_head']
-        user_modf = self.PR_dc_param_verf.user_modf # dc_cleaned['user_modf']
-
         status_head = type_status_user(user_head)
         levelperm_head = status_head.levelperm
-
-        dc_status = Com_proc_sprstatus.get_list_levelperm()
-        dc_status = dc_status.res_list
-        status30 = [ item for item in dc_status if item['lvperm'] == 30][0]['status']
-        status40 = [ item for item in dc_status if item['lvperm'] == 40][0]['status']
-        status70 = [ item for item in dc_status if item['lvperm'] == 70][0]['status']
-
-        user = getUser(user_modf)
-
         
         if arg_levelperm_sel == 40:
             if levelperm_head < 100:
-                row = AdvUser.objects.filter(parentuser=user_head, 
-                                    status=status30).exclude(pk=user)
-                            
-                used30 = row.count()
+                used30 = loc_get_used_limit(30) # row.count()
                 limit30 = fields.get_limitcon40(40)
             else:
                 used30 = 0
@@ -277,16 +287,10 @@ class UpdStatus_userForm(forms.Form):
             if levelperm_head < 100:
                 dc_limit70 = fields.get_limitcon70()     
                 dc_limit70 = dc_limit70.res_dict
-
-                row30 = AdvUser.objects.filter(parentuser=user_head, 
-                                status=status30 ).exclude(pk=user)
-                row40 = AdvUser.objects.filter(parentuser=user_head, 
-                                    status=status40).exclude(pk=user)
-                row70 = AdvUser.objects.filter(parentuser=user_head, 
-                                    status=status70).exclude(pk=user)
-                used30 = row30.count()
-                used40 = row40.count()
-                used70 = row70.count()
+                
+                used30 = loc_get_used_limit(30)
+                used40 = loc_get_used_limit(40)
+                used70 = loc_get_used_limit(70)
                 limit30 = dc_limit70.get('limitcon') or 0
                 limit40 = dc_limit70.get('limitcon40') or 0
                 limit70 = dc_limit70.get('limitcon70') or 0
@@ -366,24 +370,25 @@ class UpdStatus_userForm(forms.Form):
             if levelperm_sel > 30:  
                 if levelperm_sel == 40:
                         
-                    dc_clean40 = self.get_limit_used(40) 
+                    dc_limit_used40 = self.get_limit_used(40) 
 
                     # Верификация введенных значений limitcon для levelperm_sel=40
-                    if dc_clean40.limit30 < (dc_clean40.used30 + dc_cleaned['limitcon30']) :
+                    if dc_limit_used40.limit30 < (dc_limit_used40.used30 + dc_cleaned['limitcon30']) :
                         errors['limitcon30'] = 'Превышен лимит подключений'
 
                 if levelperm_sel == 70:
 
-                    dc_clean70 = self.get_limit_used(70)
+                    # словарь типа nametuple используемых/назначенных лимитов
+                    dc_limit_used70 = self.get_limit_used(70)  
 
                     # Верификация введенных значений limitcon для levelperm_sel = 70
-                    if dc_clean70.limit30 < dc_clean70.used30 + dc_cleaned['limitcon']:
+                    if dc_limit_used70.limit30 < dc_limit_used70.used30 + dc_cleaned['limitcon']:
                         errors['limitcon'] = 'Превышен лимит подключений'
 
-                    if dc_clean70.limit40 < dc_clean70.used40 + dc_cleaned['limitcon40'] :
+                    if dc_limit_used70.limit40 < dc_limit_used70.used40 + dc_cleaned['limitcon40'] :
                         errors['limitcon40'] = 'Превышен лимит подключений'
 
-                    if dc_cleaned.get('limitcon70') and (dc_clean70.limit70 < (dc_clean70.used70 + dc_cleaned['limitcon70'])):
+                    if dc_cleaned.get('limitcon70') and (dc_limit_used70.limit70 < (dc_limit_used70.used70 + dc_cleaned['limitcon70'])):
                             errors['limitcon70'] = 'Превышен лимит подключений'
 
         if errors:
@@ -778,13 +783,44 @@ class Base_profForm(forms.Form):
 class Modf_prof_byHeaderForm(Base_profForm):    
     """ Для рукГрупп -> форма обновления профиля """
 
-    ageGroup    = forms.IntegerField(label='Возраст',
+    ageGroup = forms.IntegerField(label='Возраст',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) ) 
-     
-    #status      = forms.ModelChoiceField(label='Статус', 
-    #                widget=forms.Select(attrs={"class":"form-control"}),
-    #                empty_label='--- Выберите статус ---',
-    #                queryset = SprStatus.objects.order_by('levelperm').filter(levelperm__gt=10, levelperm__lt=100).exclude(status='proj-sadm') )
+    
+    field_order = ['first_name','last_name','email','phone','idcomp','post','pol','ageGroup']
+
+
+    def clean(self):
+        from app.com_data.any_mixin import CreateUser_ext
+        
+        
+        super().clean()
+        errors = {}
+        
+        dc_cleaned = self.cleaned_data;
+        loc_BaseUserManager = CreateUser_ext._BaseUserManager
+
+
+        # errors['limitcon'] = 'Укажите кол-во подключений менеджеров'
+        if not dc_cleaned.get('first_name'):
+            errors['first_name'] = 'Не заполнено поле "Имя"'
+
+        if not dc_cleaned.get('last_name'):
+            errors['last_name'] = 'Не заполнено поле "Фамилия"'
+
+        if not dc_cleaned.get('email'):
+            errors['email'] = 'Не заполнено поле эл. почты'
+            
+        if not dc_cleaned.get('phone'):
+            errors['phone'] = 'Не заполнено поле Телефон'
+
+        if not dc_cleaned.get('post'):
+            errors['post'] = 'Не заполнено поле Почтовый индекс'
+        else:
+            # Проверка ввода элПочты 
+            self.cleaned_data['email'] = loc_BaseUserManager.Normalize_email(dc_cleaned['email'])
+        
+        if errors:
+            raise ValidationError(errors)        
 
 
     def save(self, arg_username, arg_parentuser): 
@@ -803,25 +839,20 @@ class Modf_prof_byHeaderForm(Base_profForm):
             if user is None:
                 run_raise('Сбой обработки профиля: пользователь не определен' , showMes=True) 
 
+            user_head = getUser(arg_parentuser)
+
             cd_dict = self.cleaned_data
-                       
-            type_status = type_status_user(user)
-            status_id = type_status.statusID
-
-            cd_dict['status_id'] = status_id
-
-            pswcl = res_proc.FN_get_val_dict(cd_dict,'pswcl')
-            logincl = res_proc.FN_get_val_dict(cd_dict,'logincl')
-
-            if pswcl is None:   #восстановление пароля гостВхода по значению pswcl рукГруппы 
-                pswcl = Com_proc_advuser.get_val_from_advData(arg_parentuser, 'pswcl')
-                cd_dict['pswcl'] = pswcl
-
-            if logincl is None:
-                logincl = getLogin_cl()
-                cd_dict['logincl'] = logincl
-
+            js_struct = Com_proc_advuser.get_js_struct(user)
+            
             cd_dict['username'] = user.username
+
+            if not js_struct.get('pswcl'):
+                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
+                js_struct['pswcl'] = js_struct_head['pswcl']
+            if not js_struct.get('logincl'):
+                js_struct['logincl'] = getLogin_cl()
+
+            cd_dict['js_struct'] = js_struct
 
             # удаление пробелов. Для подстраховки 
             cd_dict = clear_space(cd_dict)
@@ -859,25 +890,30 @@ class Modf_prof_byuserForm(Base_profForm):
             if user is None:
                 run_raise(s_error + ' Пользователь не найден в БД')
             
+            js_struct = Com_proc_advuser.get_js_struct(user)
 
             # Верификация pswcl and logincl 
             pswcl = res_proc.FN_get_val_dict(cd_dict, 'pswcl')
             logincl = res_proc.FN_get_val_dict(cd_dict, 'logincl')
             if pswcl is None:
                 pswcl = Com_proc_advuser.get_val_from_advData(arg_parentuser, 'pswcl')
-                cd_dict['pswcl'] = pswcl
+                #cd_dict['pswcl'] = pswcl
+                js_struct['pswcl'] = pswcl
 
             if logincl is None:
                 logincl = getLogin_cl()
-                cd_dict['logincl'] = logincl
+                js_struct['logincl'] = logincl
+                #cd_dict['logincl'] = logincl
 
-            statusID = Com_proc_sprstatus.get_statusID_user(user)  
-            
+            #statusID = Com_proc_sprstatus.get_statusID_user(user)  
+                       
+
             cd_dict.update(
 	            dict(username=user.username,                        
-			            status_id=statusID,
-			            status = statusID,
-			            parentuser=arg_parentuser.username
+			            #status_id=statusID,
+			            #status = statusID,
+			            #parentuser=arg_parentuser.username,
+                        js_struct = js_struct
 			            ))
 
             # удаление пробелов. Для подстраховки
@@ -905,8 +941,6 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
                     widget=forms.PasswordInput(attrs={"class":"form-control", "placeholder":"Пароль"}) ) 
     password1    = forms.CharField(label='Повт. пароль', max_length=50, 
                     widget=forms.PasswordInput(attrs={"class":"form-control", "placeholder":"Повторить"}) ) 
-    
-
 
     field_order = ['username', 'password','password1', 'first_name','last_name', 'email', 'phone', 'idcomp', 'post','sendMes','pol', 'ageGroup', 'status','parentuser' ]
 

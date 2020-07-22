@@ -81,7 +81,7 @@ def UpdStatus_user(request):
     Изменения осуществляются только рукГрупп
     """
 
-    def return_render(arg_form:UpdStatus_userForm, arg_dc:dict)->dict:
+    def return_render(arg_form:UpdStatus_userForm, arg_dc:dict):
         """ Локальная процедура для запуска render:
         arg_form: UpdStatus_userForm
         arg_dc: dc_session = request.session['UpdStatus_user']
@@ -458,8 +458,31 @@ def Modf_prof_byheader(request):
 
     parentuser = request.user #Com_proc_advuser.get_user_cons(user)
 
+    # Обобщенный dict для обработки return render
+    dc_cont = dict(
+                    parentuser=parentuser.username,
+                    res=False,
+                    error='',
+                    title='Редактор профиля', 
+                    form=None
+                    )
+
+    def return_render(arg_err:str=None):
+        """ Локальная процедура для запуска render:        
+            return render 
+        """
+        nonlocal dc_cont
+
+        if arg_err:
+            dc_cont['error'] = arg_err
+
+        return render(request, 'advuser/regUser_ext.html', dc_cont)
+
+
     if request.method == 'POST':
         form = Modf_prof_byHeaderForm(request.POST)
+
+        dc_cont['form'] = form
 
         if form.is_valid():
 
@@ -482,23 +505,10 @@ def Modf_prof_byheader(request):
                 return redirect('ver_profil')  # переход на view Success_register_user
 
             else:
-
-                return render(request, 'advuser/regUser_ext.html', dict(
-                            parentuser=parentuser.username,
-                            res=False,
-                            error=res_save.error,
-                            title='Редактор профиля', 
-                            form=form
-                            ))
+                return  return_render(res_save.error)
             
         else:
-            return render(request, 'advuser/regUser_ext.html', dict(
-                            parentuser=parentuser.username,
-                            res=False,
-                            error='Проверьте введенные данные',
-                            title='Редактор профиля', 
-                            form=form
-                            ))
+            return  return_render('Проверьте введенные данные')
 
     else:  # GET запрос
         try:
@@ -527,12 +537,11 @@ def Modf_prof_byheader(request):
                 dict_initial = modf_data_dict(dict_initial)  # сброс значений '' or 'empty'
 
                 form = Modf_prof_byHeaderForm(initial=dict_initial)
-                return render(request, 'advuser/regUser_ext.html', dict(
-                                parentuser=parentuser.username,
-                                res=True,
-                                title='Редактор профиля', 
-                                form=form
-                                ))
+                dc_cont.update(dict(form=form, res=True))
+
+                return  return_render()
+
+                
         except Exception as ex:
             return redirect_empty()
 

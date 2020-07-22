@@ -48,9 +48,9 @@ def serv_add_profil (arg_dc:dict, serv_proc='sp_serv_add_profil'):
             res_proc.res = True
             res_proc.any_str = res_data['username']   
             if serv_proc == 'sp_serv_add_profil':
-                res_proc.mes = 'Создан профиль со статусом: ' + res_data['str_status']
+                res_proc.mes = 'Создан профиль : ' + res_data['str_status']
             else:
-                res_proc.mes = 'Изменен профиль со статусом: ' + res_data['str_status']
+                res_proc.mes = 'Изменен профиль : ' + res_data['str_status']
 
 
     except Exception as ex:
