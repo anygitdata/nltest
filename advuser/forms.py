@@ -639,35 +639,96 @@ class Base_profForm(forms.Form):
                     help_text = 'Важно, для отбора подаваемой информации!',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) )  
 
-    def clean(self):
-        from app.com_data.any_mixin import CreateUser_ext
+    @classmethod
+    def com_modf_quest(cls, arg_head, arg_jsstruct=None)->dict:
+        """ Обобщенная процедура обработки quest
+        верификация/изменение 
+        pswcl and logincl
+        ---------------------------
+        arg_head  используется для загрузки pswcl and logincl as default
+        arg_user для загрузки js_struct 
+        arg_user==None создается js_struct else loadFrom advuser_advuser.js_struct
+        return js_struct
+        """
         
+        js_struct = dict()
+
+        if arg_jsstruct:
+            js_struct = arg_jsstruct
+        
+        user_head = getUser(arg_head)
+
+        if not js_struct.get('pswcl'):
+                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
+                js_struct['pswcl'] = js_struct_head['pswcl']
+        if not js_struct.get('logincl'):
+                js_struct['logincl'] = getLogin_cl()
+
+        return js_struct
+
+
+    # dict описатель полей namefields -> descriptions используется в com_clean
+    dc_descr_fields = None
+
+    # список полей для верификации. Используется as default в com_clean
+    lst_fields = ('first_name','last_name','email','phone','post','idcomp')
+
+    @classmethod
+    def get_descr_fields(cls)->dict:
+        """ Возвращает объект dict dc_descr_fields """
+
+        from collections import namedtuple
+
+        if cls.dc_descr_fields is None:
+            dc_descr_fields = dict(
+                email='Эл. почта',
+                phone='Телефон',
+                idcomp='ID компании',
+                post='Почт. индекс',
+                ageGroup='Возр. группа',
+                sendMes='Получать сообщ.',
+                first_name='Имя',
+                last_name='Фамилия'
+                )
+
+            cls.dc_descr_fields = dc_descr_fields
+
+        return cls.dc_descr_fields
+
+
+    @classmethod
+    def com_clean(cls, arg_clean, arg_list=None)->dict:
+        """ Общая процедура верификации 
+        arg_clean dict self.cleaned_data
+        arg_list  список полей для верификации
+        return errors ={...}
+        """
+
+        errors = {}
+        dc_descr = cls.get_descr_fields()   # Описатель полей nameField -> descr
+
+        if arg_list is None: arg_list = cls.lst_fields
+
+        for item in arg_list:
+            if not arg_clean.get(item):
+                errors[item] = f'Не заполнено поле {dc_descr[item]}'
+
+        return errors
+
+
+    def clean(self):
         
         super().clean()
         errors = {}
         
         dc_cleaned = self.cleaned_data;
-        loc_BaseUserManager = CreateUser_ext._BaseUserManager
-
-
-        if not dc_cleaned.get('first_name'):
-            errors['first_name'] = 'Не заполнено поле "Имя"'
-
-        if not dc_cleaned.get('last_name'):
-            errors['last_name'] = 'Не заполнено поле "Фамилия"'
-            
-        if not dc_cleaned.get('phone'):
-            errors['phone'] = 'Не заполнено поле Телефон'
-
-        if not dc_cleaned.get('post'):
-            errors['post'] = 'Не заполнено поле Почтовый индекс'
         
         if not dc_cleaned.get('email') and not dc_cleaned.get('phone'):
             errors['phone'] = 'Введите email или телефон для обрСвязи'
 
         if not dc_cleaned.get('email') and dc_cleaned.get('sendMes'):
-            errors['sendMes'] = 'Для получения сообщений введите email'
-    
+            self.cleaned_data['sendMes'] = 'false'
+            #errors['email'] = 'Для получения сообщений введите email'
 
         if errors:
             raise ValidationError(errors)  
@@ -787,13 +848,15 @@ class Base_profForm(forms.Form):
             s_error = 'ValueError##advuser.form.Base_profilForm.save_upd'
 
             user_head = getUser(arg_parentuser)
+            user = getUser(arg_user)
             js_struct = Com_proc_advuser.get_js_struct(user)
+            js_struct = self.com_modf_quest(js_struct, user_head) # верификация pswcl and logincl
 
-            if not js_struct.get('pswcl'):
-                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
-                js_struct['pswcl'] = js_struct_head['pswcl']
-            if not js_struct.get('logincl'):
-                js_struct['logincl'] = getLogin_cl()
+            #if not js_struct.get('pswcl'):
+            #    js_struct_head = Com_proc_advuser.get_js_struct(user_head)
+            #    js_struct['pswcl'] = js_struct_head['pswcl']
+            #if not js_struct.get('logincl'):
+            #    js_struct['logincl'] = getLogin_cl()
 
 
             cd_dict['js_struct'] = js_struct
@@ -826,32 +889,11 @@ class Modf_prof_byHeaderForm(Base_profForm):
 
 
     def clean(self):
-        from app.com_data.any_mixin import CreateUser_ext
-        
         
         super().clean()
         errors = {}
         
-        dc_cleaned = self.cleaned_data;
-        loc_BaseUserManager = CreateUser_ext._BaseUserManager
-
-
-        # errors['limitcon'] = 'Укажите кол-во подключений менеджеров'
-        if not dc_cleaned.get('first_name'):
-            errors['first_name'] = 'Не заполнено поле "Имя"'
-
-        if not dc_cleaned.get('last_name'):
-            errors['last_name'] = 'Не заполнено поле "Фамилия"'
-
-        if not dc_cleaned.get('email'):
-            errors['email'] = 'Не заполнено поле эл. почты'
-            
-        if not dc_cleaned.get('phone'):
-            errors['phone'] = 'Не заполнено поле Телефон'
-
-        if not dc_cleaned.get('post'):
-            errors['post'] = 'Не заполнено поле Почтовый индекс'
-        
+        errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
         
         if errors:
             raise ValidationError(errors)        
@@ -876,9 +918,10 @@ class Modf_prof_byHeaderForm(Base_profForm):
             user_head = getUser(arg_parentuser)
 
             cd_dict = self.cleaned_data
-            js_struct = Com_proc_advuser.get_js_struct(user)
-            
             cd_dict['username'] = user.username
+
+            js_struct = Com_proc_advuser.get_js_struct(user)            
+            js_struct['idcomp'] = cd_dict['idcomp']  # верификация idcomp в clean()
 
             if not js_struct.get('pswcl'):
                 js_struct_head = Com_proc_advuser.get_js_struct(user_head)
@@ -909,36 +952,18 @@ class Modf_prof_byuserForm(Base_profForm):
     """ Для пользователй проекта -> измПрофиля """
     ageGroup    = forms.IntegerField(label='Возраст',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) ) 
+    
     field_order = ['first_name','last_name','email','phone','idcomp','post','pol','ageGroup']
 
 
     def clean(self):
-        from app.com_data.any_mixin import CreateUser_ext
         
         super().clean()
         errors = {}
         
-        dc_cleaned = self.cleaned_data;
-        loc_BaseUserManager = CreateUser_ext._BaseUserManager
+        errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
 
 
-        # errors['limitcon'] = 'Укажите кол-во подключений менеджеров'
-        if not dc_cleaned.get('first_name'):
-            errors['first_name'] = 'Не заполнено поле "Имя"'
-
-        if not dc_cleaned.get('last_name'):
-            errors['last_name'] = 'Не заполнено поле "Фамилия"'
-
-        if not dc_cleaned.get('email'):
-            errors['email'] = 'Не заполнено поле эл. почты'
-            
-        if not dc_cleaned.get('phone'):
-            errors['phone'] = 'Не заполнено поле Телефон'
-
-        if not dc_cleaned.get('post'):
-            errors['post'] = 'Не заполнено поле Почтовый индекс'
-       
-        
         if errors:
             raise ValidationError(errors)    
 
@@ -958,6 +983,7 @@ class Modf_prof_byuserForm(Base_profForm):
                 run_raise(s_error + ' Пользователь не найден в БД')
             
             js_struct = Com_proc_advuser.get_js_struct(user)
+            js_struct['idcomp'] = cd_dict['idcomp'] # верификация а clean()
             
             # Верификация pswcl and logincl 
             if not js_struct.get('pswcl'):
@@ -999,6 +1025,23 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
 
     field_order = ['username', 'password','password1', 'first_name','last_name', 'email', 'phone', 'idcomp', 'post','sendMes','pol', 'ageGroup', 'status','parentuser' ]
 
+
+    def clean(self):
+        
+        super().clean()
+        errors = {}
+        
+        errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
+
+        password = self.cleaned_data['password']
+        password2 = self.cleaned_data['password2']
+
+        if password != password2:
+            errors['password'] = ValidationError('Пароли не совпадают')
+
+
+        if errors:
+            raise ValidationError(errors)
 
     # Создание нового профиля - участника проекта
     # использование сервПроцедуры 
