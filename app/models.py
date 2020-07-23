@@ -116,6 +116,21 @@ class spr_fields_models(models.Model):
         return res;
 
 
+    @classmethod
+    def get_js_data(cls, arg_levelperm)->dict:
+        """ 
+        return dict spr_fields_models.js_data  for arg_levelperm or None  
+        """
+        
+        row = cls.objects.filter(id_key=arg_levelperm)
+        if row.exists():
+            row = row.first()
+        else:
+            return None
+
+        res = cls.loads( row.js_data)
+
+
 
     class Type_mod:        
         def __init__(self,  _upd=None, _ins=None):

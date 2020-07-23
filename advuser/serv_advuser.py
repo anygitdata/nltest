@@ -758,7 +758,7 @@ class Com_proc_advuser:
             dict_head = cls.get_dataHeader()
             dict_cons = cls.get_dataCons(user)
             dict_user = cls.get_advData(user)
-            dict_user['sendMes'] = structDef.conv_send_mes(dict_user.get('sendMes'))
+            dict_user['sendMes'] = structDef.conv_send_mes(dict_user.get('sendMes'))            
 
             if dict_cons is None:
                 dict_cont = dict_head

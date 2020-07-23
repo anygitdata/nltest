@@ -9,7 +9,7 @@ from app import Res_proc, ErrorRun_impl, PM_run_raise as run_raise, getUser
 import json
 # from django.contrib.auth.models import User
 
-def serv_add_profil (arg_dc:dict, serv_proc='sp_serv_add_profil'):
+def serv_add_profil (arg_dc:dict, serv_proc='sp_serv_add_profil_02'):
     """ Процедура взаимодействия с сервПроцедурой 
         общая процедура для создПрофиля через рукГруппой или через гостВХод  """
 
@@ -47,7 +47,7 @@ def serv_add_profil (arg_dc:dict, serv_proc='sp_serv_add_profil'):
 
             res_proc.res = True
             res_proc.any_str = res_data['username']   
-            if serv_proc == 'sp_serv_add_profil':
+            if serv_proc == 'sp_serv_add_profil_02':
                 res_proc.mes = 'Создан профиль : ' + res_data['str_status']
             else:
                 res_proc.mes = 'Изменен профиль : ' + res_data['str_status']

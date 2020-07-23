@@ -596,11 +596,8 @@ class AdvPanel_profForm(forms.Form):
                 widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Участник проекта"}) ) 
 
 
-"""
-Базовый класс для редактирования данных профиля
-"""
-class Base_profForm(forms.Form):
-    """ Форма для клиентов  """
+class Templ_profForm(forms.Form):
+    """ Общий шаблон Форм """
 
     # -------------- Поля формы для модели User ------------
 
@@ -627,11 +624,6 @@ class Base_profForm(forms.Form):
                     help_text='Регион клиента',
                     required=False,  
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Почтовый индекс"}))    
-    sendMes     = forms.ChoiceField(label='Получать сообщ.', 
-                    help_text = 'Интересная информация, восстановление пароля',
-                    choices=GET_MES,
-                    widget=forms.RadioSelect())
-                    
     pol         = forms.ChoiceField(label='Пол', choices=POL,widget=forms.RadioSelect())
    
     ageGroup    = forms.IntegerField(label='Возраст',
@@ -716,6 +708,17 @@ class Base_profForm(forms.Form):
         return errors
 
 
+"""
+Базовый класс для редактирования данных профиля
+"""
+class Base_profForm(Templ_profForm):
+    """ Форма для клиентов  """
+
+    sendMes     = forms.ChoiceField(label='Получать сообщ.', 
+                    help_text = 'Интересная информация, восстановление пароля',
+                    choices=GET_MES,
+                    widget=forms.RadioSelect())
+
     def clean(self):
         
         super().clean()
@@ -728,7 +731,6 @@ class Base_profForm(forms.Form):
 
         if not dc_cleaned.get('email') and dc_cleaned.get('sendMes'):
             self.cleaned_data['sendMes'] = 'false'
-            #errors['email'] = 'Для получения сообщений введите email'
 
         if errors:
             raise ValidationError(errors)  
@@ -850,14 +852,7 @@ class Base_profForm(forms.Form):
             user_head = getUser(arg_parentuser)
             user = getUser(arg_user)
             js_struct = Com_proc_advuser.get_js_struct(user)
-            js_struct = self.com_modf_quest(js_struct, user_head) # верификация pswcl and logincl
-
-            #if not js_struct.get('pswcl'):
-            #    js_struct_head = Com_proc_advuser.get_js_struct(user_head)
-            #    js_struct['pswcl'] = js_struct_head['pswcl']
-            #if not js_struct.get('logincl'):
-            #    js_struct['logincl'] = getLogin_cl()
-
+            js_struct = self.com_modf_quest(user_head, js_struct) # верификация pswcl and logincl
 
             cd_dict['js_struct'] = js_struct
             cd_dict['username'] = user.username
@@ -879,7 +874,7 @@ class Base_profForm(forms.Form):
 # ****************************************************************************
 
 # Форма обновленияПрофиля для руководителя проекта или его субРуководители
-class Modf_prof_byHeaderForm(Base_profForm):    
+class Modf_prof_byHeaderForm(Templ_profForm):    
     """ Для рукГрупп -> форма обновления профиля """
 
     ageGroup = forms.IntegerField(label='Возраст',
@@ -893,7 +888,7 @@ class Modf_prof_byHeaderForm(Base_profForm):
         super().clean()
         errors = {}
         
-        errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
+        errors = self.com_clean(self.cleaned_data, ('idcomp',))
         
         if errors:
             raise ValidationError(errors)        
@@ -922,13 +917,8 @@ class Modf_prof_byHeaderForm(Base_profForm):
 
             js_struct = Com_proc_advuser.get_js_struct(user)            
             js_struct['idcomp'] = cd_dict['idcomp']  # верификация idcomp в clean()
-
-            if not js_struct.get('pswcl'):
-                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
-                js_struct['pswcl'] = js_struct_head['pswcl']
-            if not js_struct.get('logincl'):
-                js_struct['logincl'] = getLogin_cl()
-
+            js_struct = self.com_modf_quest(user_head, js_struct) # верификация pswcl and logincl
+            
             cd_dict['js_struct'] = js_struct
 
             # удаление пробелов. Для подстраховки 
@@ -948,7 +938,7 @@ class Modf_prof_byHeaderForm(Base_profForm):
 # Форма для редактирования профиля самими proj_member
 # предназначена для участников проекта
 # отличаетс от AddProf_memberForm набором полей
-class Modf_prof_byuserForm(Base_profForm):   
+class Modf_prof_byuserForm(Templ_profForm):   
     """ Для пользователй проекта -> измПрофиля """
     ageGroup    = forms.IntegerField(label='Возраст',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) ) 
@@ -961,7 +951,7 @@ class Modf_prof_byuserForm(Base_profForm):
         super().clean()
         errors = {}
         
-        errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
+        errors = self.com_clean(self.cleaned_data, ('idcomp',))
 
 
         if errors:
@@ -977,22 +967,21 @@ class Modf_prof_byuserForm(Base_profForm):
         try:
 
             user = getUser(arg_user)
-            user_head = getUser(arg_parentuser)
-
             if user is None:
                 run_raise(s_error + ' Пользователь не найден в БД')
+            user_head = getUser(arg_parentuser)
+
+            _advdata = Com_proc_advuser.get_advData(user)
+
+            # Параметр, который не используется в форме, но обязателен
+            cd_dict['sendMes'] = _advdata['sendMes']  
             
             js_struct = Com_proc_advuser.get_js_struct(user)
             js_struct['idcomp'] = cd_dict['idcomp'] # верификация а clean()
-            
-            # Верификация pswcl and logincl 
-            if not js_struct.get('pswcl'):
-                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
-                js_struct['pswcl'] = js_struct_head['pswcl']
-            if not js_struct.get('logincl'):
-                js_struct['logincl'] = getLogin_cl()
+            js_struct = self.com_modf_quest(user_head, js_struct) # верификация pswcl and logincl
 
 
+            # ----------- Подготовка dict for servProc ----------------
             cd_dict.update(
 	            dict(username=user.username,                        			    
                         js_struct = js_struct
@@ -1002,6 +991,7 @@ class Modf_prof_byuserForm(Base_profForm):
             cd_dict = clear_space(cd_dict)
             cd_dict = upd_space_into_empty(cd_dict) # дополнительное преобразование
 
+            # Запись профиля в БД by servProc
             res_proc = serv_add_profil(cd_dict, serv_proc='sp_serv_upd_profil')
 
                         
@@ -1022,8 +1012,13 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
                     widget=forms.PasswordInput(attrs={"class":"form-control", "placeholder":"Пароль"}) ) 
     password1    = forms.CharField(label='Повт. пароль', max_length=50, 
                     widget=forms.PasswordInput(attrs={"class":"form-control", "placeholder":"Повторить"}) ) 
+    status = forms.ModelChoiceField(label='Статус', 
+                    widget=forms.Select(attrs={"class":"form-control"}),
+                    empty_label='--- Выберите статус ---',
+                    queryset = SprStatus.objects.order_by('levelperm').filter(levelperm__gt=10, levelperm__lt=100).exclude(status='proj-sadm') )
 
-    field_order = ['username', 'password','password1', 'first_name','last_name', 'email', 'phone', 'idcomp', 'post','sendMes','pol', 'ageGroup', 'status','parentuser' ]
+
+    field_order = ['username', 'password','password1', 'first_name','last_name', 'email', 'phone', 'idcomp', 'post','pol', 'ageGroup', 'status' ]
 
 
     def clean(self):
@@ -1031,12 +1026,18 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
         super().clean()
         errors = {}
         
+        cd_dict = self.cleaned_data
+
         errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
 
-        password = self.cleaned_data['password']
-        password2 = self.cleaned_data['password2']
+        user_modf = getUser(cd_dict['username'])
+        if user_modf:
+            errors['username'] = 'Повторный ввод логина'
 
-        if password != password2:
+        password = self.cleaned_data['password']
+        password1 = self.cleaned_data['password1']
+
+        if password != password1:
             errors['password'] = ValidationError('Пароли не совпадают')
 
 
@@ -1049,100 +1050,51 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
         """ Сохранение профиля пользователя на уровне рукГруппы """
 
         from django.contrib.auth.hashers import make_password        
-        from .serv_advuser import Com_proc_advuser
         from app.com_serv_dbase.serv_modf_profil import serv_add_profil
-        from collections import namedtuple
         from app.models import spr_fields_models
 
         cd_dict = self.cleaned_data
-        Perm = namedtuple('Perm','levelperm,statusID,parentuser')
         s_error = 'advuser.form.AddProf_memberForm.save'
         s_err   = 'verify##'
-
-        def get_perm(arg_user:User)->Perm:
-            """ Верификация привилегий, statusID, parentuser """
-
-            nonlocal cd_dict
-
-            parentuser = None
-            if arg_user.is_superuser:
-                try:
-                    parentuser = Com_proc_advuser.get_user_head();
-                except:
-                    parentuser = arg_user
-
-            else: parentuser = arg_user
-
-            type_status = type_status_user(arg_user)
-
-            res_tupl = Perm(levelperm=type_status.levelperm, 
-                            statusID=cd_dict['status'].pk,
-                            parentuser=parentuser.username)
-            return res_tupl
-
-        def seting_pswcl(user):
-            """ Обработка пароля госВхода pswcl """
-            nonlocal cur_levelperm, cd_dict
-
-            pswcl = None
-
-            if user.is_superuser :
-                pswcl = getPassword_cl()
-            
-            else:
-                if cur_levelperm > 30:  # Если это рукГруппы назначить новый пароль pswcl
-                    pswcl = getPassword_cl()
-                else:
-                    pswcl = Com_proc_advuser.get_val_from_advData(arg_user, 'pswcl')
-
-            if pswcl is not None:
-                cd_dict['pswcl'] = pswcl
-            else:
-                run_raise('Пароль гостВхода не создан')
-
 
         res_proc = Res_proc();
 
         try:            
+            
+            user_head = getUser(arg_user)
+            status_head = type_status_user(user_head)
+            levelperm_head = status_head.levelperm
 
-            # Верификация ввода пароля 
-            if cd_dict['password'] != cd_dict['password1']:
-                run_raise('Не совпадение полей ввода пароля', showMes=True)
-
-            user = getUser(arg_user)
-            cd_perm = get_perm(user)           
-
-            logincl = getLogin_cl()
-
-
+            levelperm_sel = cd_dict['status'].levelperm
             statusID = cd_dict['status'].pk
-            cur_levelperm = Com_proc_sprstatus.get_levelperm(statusID)
 
-            if cur_levelperm == 20 :
+            del cd_dict['status']
+            cd_dict['sendMes'] = 'true'
+
+            if levelperm_sel == 20 :
                 run_raise('Профиль клиента должен создавать пользователь гостВхода', showMes=True)
 
-            if cd_perm.levelperm  < 40 or cur_levelperm >= cd_perm.levelperm :
+            if levelperm_head  < 40 or levelperm_sel > levelperm_head :
                 run_raise(s_err + 'Нет прав на создание профиля', showMes=True)
-
-            if cur_levelperm > 30 :
-                limitcon = spr_fields_models.get_limitcon40(cur_levelperm) 
-                if limitcon == 0 :
-                    run_raise('form.AddProf_memberForm: Нет данных limitcon')
-
-                cd_dict.update(dict(limitcon=limitcon))
             
-            seting_pswcl(user)  # Создание заполнение cd_dict[pswcl]
+            # Заполнение структуры js_struct 
+            # from spr_fields_models.js_data where levelperm = levelperm_sel
+            js_struct = spr_fields_models.get_js_data(levelperm_sel) 
+
+            js_struct = self.com_modf_quest(user_head, js_struct) # Заполнение pswcl logincl
+            js_struct['idcomp'] = cd_dict['idcomp']
+
 
             cd_dict.update(
                 dict(
-                   parentuser = cd_perm.parentuser,
+                   parentuser = user_head.username,
                    password = make_password(cd_dict['password']),
-                   password_cl = make_password(cd_dict['pswcl']),
-                   logincl = logincl,
+                   password_cl = make_password(js_struct['pswcl']),
                    full_name= cd_dict['first_name'] + ' ' + cd_dict['last_name'],
-                   is_active='true',
                    status_id= statusID,
-                   status= statusID
+                   js_struct=js_struct,
+                   pswcl = js_struct['pswcl'],    # используется для инициализации questProfil
+                   logincl = js_struct['logincl']
                     )
                 )
 
