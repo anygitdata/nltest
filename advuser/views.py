@@ -801,7 +801,7 @@ def List_profils(request):
     Табличная форма показа менеджеров
     """
 
-    from .modify_models import get_list_prof_memb    
+    from .modify_models import get_list_prof_memb, get_num_count_record_prof_data   
     from advuser.serv_typestatus import type_status_user
 
     user = request.user
@@ -809,7 +809,11 @@ def List_profils(request):
     if type_status.levelperm < 40:
         return redirect_empty(arg_title='Уровень прав', arg_mes='Нет прав на просмотр данных')
 
-    res_data_prof = get_list_prof_memb(user, arg_list=None)
+    # изменение 24.07.2020  использование пагинатора
+    res_num_count = get_num_count_record_prof_data(user, arg_list=None )
+
+
+    res_data_prof = get_list_prof_memb(user, arg_list=None, num_rows=5, sel_page=2)
     if res_data_prof is None:
         redirect_empty('Нет данных для просмотра')
 

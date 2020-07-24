@@ -705,15 +705,26 @@ def get_dictData_init_Form_regQuest(user):
     return res_proc
 
 
+def get_num_count_record_prof_data(arg_user, arg_list=None):
+    """ """
+    from app.com_serv_dbase.serv_modf_profil import serv_get_data_prof
+
+    res = serv_get_data_prof(user, arg_list, num_count=1)
+
+    return res;
+
+
 """
 Создание списка данных для отображения в шаблоне prof_table_format
 Предназначено для руководителей групп 
 """
-def get_list_prof_memb(arg_user, arg_list=None):   
+def get_list_prof_memb(arg_user, arg_list=None, num_rows=5, sel_page=1):   
     """ Создание списка данных для отображения в шаблоне prof_table_format
     Предназначено для руководителей групп  
     Загрузка данных из БД
     arg_list формат '30,49,70'  строка levelperm
+    num_rows кол-во записей в одной странице
+    sel_page номер извлекаемой страницы    
     """
     
     from .serv_advuser import Struct_default_AdvUser as Struct_def
@@ -740,7 +751,7 @@ def get_list_prof_memb(arg_user, arg_list=None):
         if user is None:
             run_raise('Пользователь не определен', True)
 
-        res_data = serv_get_data_prof(user, arg_list)
+        res_data = serv_get_data_prof(user, arg_list, num_rows, sel_page, num_count=0)
 
         for item in res_data.res_list:
             _dict = json.loads(item['advData'])

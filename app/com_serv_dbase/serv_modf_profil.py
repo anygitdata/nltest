@@ -106,9 +106,14 @@ def sp_modf_data (arg_dc:dict, serv_proc='sp_serv_add_profil'):
     return res_proc
 
 
-def serv_get_data_prof(arg_user, str_levelperm=None):
+def serv_get_data_prof(arg_user, str_levelperm=None, num_rows=0, sel_page=1, num_count=False):
     """ Выборка данных профиля для отображения в виде списка пользователй проекта
         Предназначено для рукПроекта
+        ---------------------------------
+        arg_user Пользователь для которого делается фильтрация данных
+        str_levelperm уровень levelperm   (значение = None -> ВСЕх уровней )
+        num_rows кол-во записей в части   (значение = 0 -> ВСЕ записи)
+        sel_page Номер выбираемой части 
     """
 
     from . .com_data.write_exception_into_log import PM_write_except_into_log as write_into_log
@@ -124,7 +129,11 @@ def serv_get_data_prof(arg_user, str_levelperm=None):
         if str_levelperm is None:
             str_levelperm = '30,40,70'
 
-        dc_arg = dict(username=user.username, lstlevelperm=str_levelperm )
+        dc_arg = dict(username=user.username, 
+                      lstlevelperm=str_levelperm, 
+                      num_rows=num_rows, 
+                      sel_page=sel_page )
+
         s_dict = json.dumps(dc_arg, ensure_ascii=False)
         lst_res = []
 
