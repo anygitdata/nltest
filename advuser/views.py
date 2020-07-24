@@ -69,7 +69,14 @@ def AdvPanel_prof(request):
                 cache.set('UpdStatus_user', proj_memb)
                 return redirect('updpermuser')          
     else:
-        form = AdvPanel_profForm()
+
+        if not cache.has_key('AdvPanel_prof'): 
+            form = AdvPanel_profForm()
+        else:
+            proj_memb = cache.get('AdvPanel_prof')
+            dc_init = dict(proj_memb=proj_memb)
+            form = AdvPanel_profForm(initial=dc_init)
+
         return render(request,'advuser/header_panel.html', dict(form=form, error=None))
  
 
@@ -860,10 +867,11 @@ def Redir_upd_prof_listProf(request, mes):
     if user.username != parentuser.username:
         return redirect_empty(arg_title='Права редактирования', arg_mes='Нет прав на редактирование профиля')
 
-    #dict_cache = dict(username=mes)
-    cache.set('Upd_prof_member', mes)
+    #cache.set('Upd_prof_member', mes)
 
-    return redirect ('updprofiluser')        
+    cache.set('AdvPanel_prof', mes)
+
+    return redirect ('modpanelprof')
 
 
 """
