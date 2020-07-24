@@ -705,15 +705,6 @@ def get_dictData_init_Form_regQuest(user):
     return res_proc
 
 
-def get_num_count_record_prof_data(arg_user, arg_list=None):
-    """ """
-    from app.com_serv_dbase.serv_modf_profil import serv_get_data_prof
-
-    res = serv_get_data_prof(user, arg_list, num_count=1)
-
-    return res;
-
-
 """
 Создание списка данных для отображения в шаблоне prof_table_format
 Предназначено для руководителей групп 
@@ -753,22 +744,31 @@ def get_list_prof_memb(arg_user, arg_list=None, num_rows=5, sel_page=1):
 
         res_data = serv_get_data_prof(user, arg_list, num_rows, sel_page, num_count=0)
 
+        res_page = {}
         for item in res_data.res_list:
+
             _dict = json.loads(item['advData'])
 
-            _dict['levelperm']  = item['levelperm']
-            _dict['status']     = Struct_def.conv_status_into_str(_dict.get('status_id'))
-            _dict['pol']        = Struct_def.conv_pol(_dict.get('pol'))
-            _dict['sendMes']    = Struct_def.conv_send_mes(_dict.get('sendMes'))
+            if item['levelperm'] == 0:
+                res_page = _dict
+            else:
+                _dict['levelperm']  = item['levelperm']
+                _dict['status']     = Struct_def.conv_status_into_str(_dict.get('status_id'))
+                _dict['pol']        = Struct_def.conv_pol(_dict.get('pol'))
+                _dict['sendMes']    = Struct_def.conv_send_mes(_dict.get('sendMes'))
 
-            _dict['idcomp']     = res_proc.FN_get_val_dict(_dict, 'idcomp') or Struct_def.idcomp
-            _dict['email']      = res_proc.FN_get_val_dict(_dict, 'email') or Struct_def.email
-            _dict['ageGroup']   = res_proc.FN_get_val_dict(_dict, 'ageGroup') or Struct_def.ageGroup
-            _dict['phone']      = res_proc.FN_get_val_dict(_dict, 'phone') or Struct_def.phone
-            _dict['post']       = res_proc.FN_get_val_dict(_dict, 'post') or 'Нет'
-            _dict['logincl']    = res_proc.FN_get_val_dict(_dict, 'logincl') or 'Нет'
+                _dict['idcomp']     = res_proc.FN_get_val_dict(_dict, 'idcomp') or Struct_def.idcomp
+                _dict['email']      = res_proc.FN_get_val_dict(_dict, 'email') or Struct_def.email
+                _dict['ageGroup']   = res_proc.FN_get_val_dict(_dict, 'ageGroup') or Struct_def.ageGroup
+                _dict['phone']      = res_proc.FN_get_val_dict(_dict, 'phone') or Struct_def.phone
+                _dict['post']       = res_proc.FN_get_val_dict(_dict, 'post') or 'Нет'
+                _dict['logincl']    = res_proc.FN_get_val_dict(_dict, 'logincl') or 'Нет'
 
-            res_list.append(_dict)
+                res_list.append(_dict)
+
+
+
+        res_proc.res_dict = res_page # сведения пагинатора 
 
         res_proc.res_list = res_list
         res_proc.res = True

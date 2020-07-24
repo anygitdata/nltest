@@ -801,7 +801,7 @@ def List_profils(request):
     Табличная форма показа менеджеров
     """
 
-    from .modify_models import get_list_prof_memb, get_num_count_record_prof_data   
+    from .modify_models import get_list_prof_memb   
     from advuser.serv_typestatus import type_status_user
 
     user = request.user
@@ -809,19 +809,29 @@ def List_profils(request):
     if type_status.levelperm < 40:
         return redirect_empty(arg_title='Уровень прав', arg_mes='Нет прав на просмотр данных')
 
+    if 'page' in request.GET:
+        sel_page = request.GET['page']
+    else: sel_page = 1
+
+
     # изменение 24.07.2020  использование пагинатора
-    res_num_count = get_num_count_record_prof_data(user, arg_list=None )
-
-
-    res_data_prof = get_list_prof_memb(user, arg_list=None, num_rows=5, sel_page=2)
+    res_data_prof = get_list_prof_memb(user, arg_list=None, num_rows=5, sel_page=sel_page)
     if res_data_prof is None:
         redirect_empty('Нет данных для просмотра')
 
-    res_list = res_data_prof.res_list   
+    res_list = res_data_prof.res_list
     if res_list is None:
         return redirect_empty(arg_title='Сообщение сервера', arg_mes='Нет данных построения списка')
 
-    cont = dict(rows=res_list)
+    dc_page = res_data_prof.res_dict
+    num_pages = []
+    num = 1
+    while num <= dc_page['num_pages']:
+        num_pages.append(num)
+        num +=1
+
+    cont = dict(
+        rows=res_list, dc_page=dc_page, num_pages=num_pages)
 
     return render(request, 'advuser/prof_table_format.html', cont)
 

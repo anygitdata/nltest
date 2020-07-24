@@ -45,7 +45,17 @@
                 </div>
             </div>    
         </div>
+
     {% endfor %}
+
+    <div class="mb-2 mt-2">
+        <span class="mr-2" > выбрана {{dc_page.sel_page}} (из {{dc_page.num_pages}}) </span>
+        {% for page in num_pages %}
+            <a href="?page={{page}}">{{page}}</a>
+        {% endfor %}
+
+        {#{"num_rows": 5, "sel_page": 2, "num_count": 14, "num_pages": 3}#} 
+    </div>
 
     <div class="mt-2">
         <a class="text-info" href="{% url 'addprof_member' %}" >Создать профиль менеджера</a>
