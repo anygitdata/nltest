@@ -797,7 +797,7 @@ class Base_profForm(Templ_profForm):
         
         from django.contrib.auth.hashers import make_password        
         from app.com_serv_dbase.serv_modf_profil import serv_add_profil
-               
+        from app.models import spr_fields_models               
 
         res_proc = Res_proc()
         cd_dict = self.cleaned_data
@@ -809,21 +809,25 @@ class Base_profForm(Templ_profForm):
             if parentuser is None:
                 run_raise(s_error+' Консультант гостВхода не найден')
 
-            pswcl = getPassword_cl()
-            if pswcl is None: 
-                run_raise(s_error +' Пароль гостВхода не создан')
+            status = Com_proc_sprstatus.get_status_by_levelperm(20)
+            statusID = status.pk
+            levelperm_sel = status.levelperm
 
-            statusID = Com_proc_sprstatus.get_status_qust_regs().pk
+            # Заполнение структуры js_struct 
+            # from spr_fields_models.js_data where levelperm = levelperm_sel
+            js_struct = spr_fields_models.get_js_struct(levelperm_sel)
+
+            js_struct['pswcl'] = getPassword_cl()
+            js_struct['idcomp'] = cd_dict.get('idcomp') or 'empty'
+
             cd_dict.update(
                     dict(
                             parentuser = parentuser.username,
-                            pswcl = pswcl,
-                            password = make_password(pswcl),
+                            password = make_password(js_struct['pswcl']),
                             username = getLogin_cl(),
-                            is_active='true',
                             status_id= statusID,
-                            status= statusID,
-                            full_name= cd_dict['first_name'] + ' ' + cd_dict['last_name']
+                            full_name= cd_dict['first_name'] + ' ' + cd_dict['last_name'],
+                            js_struct = js_struct
                         ))
 
             cd_dict = clear_space(cd_dict)
@@ -1079,7 +1083,7 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
             
             # Заполнение структуры js_struct 
             # from spr_fields_models.js_data where levelperm = levelperm_sel
-            js_struct = spr_fields_models.get_js_data(levelperm_sel) 
+            js_struct = spr_fields_models.get_js_struct(levelperm_sel)
 
             js_struct = self.com_modf_quest(user_head, js_struct) # Заполнение pswcl logincl
             js_struct['idcomp'] = cd_dict['idcomp']

@@ -813,9 +813,15 @@ class Com_proc_advuser:
                         ]
 
                 if type_status.levelperm in (40, 70):
-                    arrayProf += [
-                        dict(val=dict_user.get('limitcon') or structDef.limitcon , str='Лимит подкл.:')]
-                
+                    if type_status.levelperm == 40:
+                        arrayProf += [
+                            dict(val=dict_user.get('limitcon') or structDef.limitcon , str='Лимит подкл.:')]
+                    else:
+                        arrayProf += [
+                            dict(val=dict_user.get('limitcon') or structDef.limitcon , str='Лимит подкл.:'),
+                            dict(val=dict_user.get('limitcon40') or structDef.limitcon , str='Подкл. рукГр:'),
+                            dict(val=dict_user.get('limitcon70') or structDef.limitcon , str='Подкл. максУровень:')
+                            ]
 
 
             res_proc.res_dict = dict(  

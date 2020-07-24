@@ -117,9 +117,9 @@ class spr_fields_models(models.Model):
 
 
     @classmethod
-    def get_js_data(cls, arg_levelperm)->dict:
+    def get_js_struct(cls, arg_levelperm)->dict:
         """ 
-        return dict spr_fields_models.js_data  for arg_levelperm or None  
+        return dict spr_fields_models.js_data[fields_model]  for arg_levelperm or None  
         """
         
         row = cls.objects.filter(id_key=arg_levelperm)
@@ -129,7 +129,9 @@ class spr_fields_models(models.Model):
             return None
 
         res = cls.loads( row.js_data)
+        res = res['fields_model']
 
+        return res
 
 
     class Type_mod:        

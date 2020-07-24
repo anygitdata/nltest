@@ -384,10 +384,28 @@ class Com_proc_sprstatus:
 
 
     @classmethod
+    def get_status_by_levelperm(cls, arg_levelperm:int):
+        """ Выборка объекта Status по значению levelperm 
+        return SprStatus or None
+        """
+        from .models import SprStatus
+        
+        row = SprStatus.objects.filter(levelperm=arg_levelperm)
+        if row.exists():
+            row = row.first()
+        else:
+            return None
+
+        return row
+
+
+    @classmethod
     def get_status_qust_regs(cls):
         """ return obj_or_None Объект sprStatus for qust_regs зарегистрированный клиент  """
 
-        return cls.getStatus_or_None('qust-regs')
+        res = cls.getStatus_or_None('qust-regs')
+
+        return res
     
     
     # объект sprStatus_or_None for руководПроекта
