@@ -809,9 +809,17 @@ def List_profils(request):
     if type_status.levelperm < 40:
         return redirect_empty(arg_title='Уровень прав', arg_mes='Нет прав на просмотр данных')
 
-    if 'page' in request.GET:
-        sel_page = request.GET['page']
-    else: sel_page = 1
+    # Перезапуск, если 'page' in request.GET:
+    if not cache.has_key('List_profils'): 
+        if 'page' in request.GET:
+            sel_page = request.GET['page']
+            cache.set('List_profils', sel_page)
+            return redirect('listprofils')
+
+        else: sel_page = 1
+    else:
+        sel_page = cache.get('List_profils')
+        cache.delete('List_profils')
 
 
     # изменение 24.07.2020  использование пагинатора
@@ -834,7 +842,6 @@ def List_profils(request):
         rows=res_list, dc_page=dc_page, num_pages=num_pages)
 
     return render(request, 'advuser/prof_table_format.html', cont)
-
 
 
 @login_required

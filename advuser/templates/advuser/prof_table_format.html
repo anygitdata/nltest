@@ -18,16 +18,14 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0"> {{row.full_name}} </h5>
-                            <small> <strong>Логин  {{row.username}} </strong> </small>
-                        <div >
-                        </div>
+                            <small> <strong>Логин  {{row.username}} </strong> </small>                        
                     </div>
                     
                     <div class="card-body" style="font-size:0.7rem;" >
                         <div>
                             <h6 class="card-subtitle" >Статус: {{row.status}}</h6>
-                            <div class="w-100">
-                                Лимит подкл.: <strong class="font-weight-bold">{{row.status_perm}}</strong>
+                            <div>
+                                Лимит подкл.: {{row.status_perm}}
                             </div>
                         </div>
 
@@ -78,9 +76,15 @@
     </div>
 
     <div class="mb-2 mt-2">
-        <span class="mr-2" > выбрана {{dc_page.sel_page}} (из {{dc_page.num_pages}}) </span>
+        <span class="mr-2" > выбрано {{dc_page.sel_page}} (из {{dc_page.num_pages}}) </span>
         {% for page in num_pages %}
-            <a href="?page={{page}}">{{page}}</a>
+            {% if dc_page.sel_page == page %}
+                <span class="bg-info" style="padding:0.2em 0.5em; font-family:Courier New, Courier, monospace; color:#ffffff" >{{page}}</span>                 
+                
+            {%else%}                
+                    <a href="?page={{page}}">
+                        <span class="ml-1" style="padding:0 0.2em;">{{page}}</span> </a>
+            {% endif %}
         {% endfor %}
 
         {#{"num_rows": 5, "sel_page": 2, "num_count": 14, "num_pages": 3}#} 
