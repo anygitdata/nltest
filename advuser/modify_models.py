@@ -770,11 +770,12 @@ def get_list_prof_memb(arg_user, arg_list=None, num_rows=5, sel_page=1):
 
 
                 if levelperm > 30:
-                    _dict['limitcon'] = _dict.get('limitcon') or 0
+                    _dict['status_perm'] = f'Мендж:{_dict.get("limitcon") or 0} '
                     if levelperm == 70:
-                        _dict['limitcon40'] = _dict.get('limitcon40') or 0
-                        _dict['limitcon70'] = _dict.get('limitcon70') or 0
-                    
+                        _dict['status_perm'] = f'Мендж:{_dict.get("limitcon") or 0} РукГр:{_dict.get("limitcon40") or 0} РукГрРасш:{_dict.get("limitcon70") or 0}'
+                
+                else:
+                    _dict['status_perm'] = 'Не назначено'
         
                 res_list.append(_dict)
 
