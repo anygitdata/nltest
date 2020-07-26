@@ -715,7 +715,8 @@ def get_list_prof_memb(arg_user, arg_list=None, num_rows=5, sel_page=1):
     Загрузка данных из БД
     arg_list формат '30,49,70'  строка levelperm
     num_rows кол-во записей в одной странице
-    sel_page номер извлекаемой страницы    
+    sel_page номер извлекаемой страницы   
+    full_show Использование максимальной ширины данных
     """
     
     from .serv_advuser import Struct_default_AdvUser as Struct_def
@@ -749,21 +750,32 @@ def get_list_prof_memb(arg_user, arg_list=None, num_rows=5, sel_page=1):
 
             _dict = json.loads(item['advData'])
 
-            if item['levelperm'] == 0:
+            levelperm = item['levelperm']
+
+            if levelperm == 0:
                 res_page = _dict
             else:
-                _dict['levelperm']  = item['levelperm']
+                _dict['levelperm']  = levelperm
                 _dict['status']     = Struct_def.conv_status_into_str(_dict.get('status_id'))
-                _dict['pol']        = Struct_def.conv_pol(_dict.get('pol'))
-                _dict['sendMes']    = Struct_def.conv_send_mes(_dict.get('sendMes'))
 
                 _dict['idcomp']     = res_proc.FN_get_val_dict(_dict, 'idcomp') or Struct_def.idcomp
                 _dict['email']      = res_proc.FN_get_val_dict(_dict, 'email') or Struct_def.email
-                _dict['ageGroup']   = res_proc.FN_get_val_dict(_dict, 'ageGroup') or Struct_def.ageGroup
                 _dict['phone']      = res_proc.FN_get_val_dict(_dict, 'phone') or Struct_def.phone
+                
+                _dict['pol']        = Struct_def.conv_pol(_dict.get('pol'))
+                _dict['sendMes']    = Struct_def.conv_send_mes(_dict.get('sendMes'))
+                _dict['ageGroup']   = res_proc.FN_get_val_dict(_dict, 'ageGroup') or Struct_def.ageGroup
                 _dict['post']       = res_proc.FN_get_val_dict(_dict, 'post') or 'Нет'
                 _dict['logincl']    = res_proc.FN_get_val_dict(_dict, 'logincl') or 'Нет'
 
+
+                if levelperm > 30:
+                    _dict['limitcon'] = _dict.get('limitcon') or 0
+                    if levelperm == 70:
+                        _dict['limitcon40'] = _dict.get('limitcon40') or 0
+                        _dict['limitcon70'] = _dict.get('limitcon70') or 0
+                    
+        
                 res_list.append(_dict)
 
 

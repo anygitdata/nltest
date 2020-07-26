@@ -815,7 +815,7 @@ def List_profils(request):
 
 
     # изменение 24.07.2020  использование пагинатора
-    res_data_prof = get_list_prof_memb(user, arg_list=None, num_rows=5, sel_page=sel_page)
+    res_data_prof = get_list_prof_memb(user, arg_list=None, num_rows=3, sel_page=sel_page)
     if res_data_prof is None:
         redirect_empty('Нет данных для просмотра')
 

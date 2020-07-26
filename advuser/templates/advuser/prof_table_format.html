@@ -9,44 +9,86 @@
 {# Заполнение основного контента #}
 {%block main %}
 
-<div class="container-fluid mx-2">
+<div class="container-fluid">
     
+    <div class="row">
     {% for row in rows %}
 
-        <div class="row">
+            <div class="col-md-6 col-lg-6 col-sm-12 mb-2">
+                <div class="card">
+                    <div class="card-header text-center">
+                        {{row.full_name}}
+                    </div>
+                    <div class="card-body" style="font-size:0.7rem;" >
+                        <div>
+                            <h6 class="card-subtitle" style="margin-left:4rem; font-size:0.8rem;" >Статус: {{row.status}}</h6>
+                            
+                        </div>
 
-            <div class="row w-100 border-bottom border-info" style="font-size:0.8rem">
-                <div class="col-3">                
-                    <span style="font-weight:600; font-size:1rem;">{{row.full_name}} </span> <br />
-                    <div class="pl-1" style="font-size:0.75rem" >
-                        IDcomp: {{row.idcomp}}<br />
-                        Статус: {{row.status}} <br />
-                        {% if row.limitcon %}
-                        <span style="font-weight:600" > Кол-во подкл. {{row.limitcon}}</span>
-                        {% endif %}
+                        <div class="row mb-3 mt-3">
+                            {% if row.levelperm > 30 %}
+                                {% if row.levelperm == 40 or row.levelperm == 70  %}
+			                        <div class="row w-100">
+                                        <div class="col-4 text-right">Кол-во подкл.</div>
+                                        <div class="col-8 text-left">{{row.limitcon}}</div>
+                                    </div>
+                                {% endif %}
+                            
+                                {% if row.levelperm == 70 %}                                    
+                                    <div class="row w-100">
+                                            <div class="col-4 text-right">Лимит рукГр.</div>
+                                            <div class="col-8 text-left">{{row.limitcon40}}</div>
+                                        </div>
+                                    <div class="row w-100">
+                                        <div class="col-4 text-right">Лимит рукГр макс.</div>
+                                        <div class="col-8 text-left">{{row.limitcon70}}</div>
+                                    </div>
+                                {%endif%}
+			                {% endif %}
+
+                            <div class="row w-100">
+                                <div class="col-4 text-right">Логин</div>
+                                <div class="col-8 text-left">{{row.username}}</div>
+                            </div>
+                            <div class="row w-100">
+                                <div class="col-4 text-right">ID комп.</div>
+                                <div class="col-8 text-left">{{row.idcomp}}</div>
+                            </div>
+                            <div class="row w-100">
+                                <div class="col-4 text-right">email</div>
+                                <div class="col-8 text-left p-x-0">{{row.email}}</div>
+                            </div>
+                            <div class="row w-100">
+                                <div class="col-4 text-right">Телефон</div>
+                                <div class="col-8 text-left">{{row.phone}}</div>
+                            </div>
+
+                            <div class="w-100 mt-1"></div>
+                            <div class="row w-100">
+                                <div class="col-4 text-right">Возр. гр.</div>
+                                <div class="col-8 text-left">{{row.ageGroup}}</div>
+                            </div>
+
+                            <div class="row w-100">
+                                <div class="col-4 text-right">Почт. индекс</div>
+                                <div class="col-8 text-left">{{row.post}}</div>
+                            </div>
+
+                            <div class="row w-100">
+                                <div class="col-4 text-right">Логин quest</div>
+                                <div class="col-8 text-left">{{row.logincl}}</div>
+                            </div>
+                            
+                            
+
+                        </div>
+                        <a href="{% url 'updmesdata' mes=row.username %}" class="btn btn-info" style="padding-bottom:0; padding-top:0; font-size:0.7rem">Изм. профиль</a>
                     </div>
                 </div>
-                <div class="col-3" >
-                        <span style="font-weight:600">Логин: {{row.username}}</span>  <br />
-                        email: {{row.email}}<br />
-                        Получать сообщ.: {{row.sendMes}} <br />
-                </div>
-                <div class="col-2">
-                        Телефон: {{row.phone}}<br />
-                        ВозрГруппа: {{row.ageGroup}}<br />
-                        Пол: {{row.pol}}
-                </div>
-                <div class="col-3">
-                        ЛогинКлиентов: {{row.logincl}} <br />
-                        ПарольКлиентов: {{row.pswcl}}  <br />
-                    {% if row.levelperm > 29  %}
-                        <a class="text-info font-weight-bold" href="{% url 'updmesdata' mes=row.username %}" >Изменить профиль </a>
-                    {% endif %}
-                </div>
-            </div>    
-        </div>
+            </div>            
 
     {% endfor %}
+    </div>
 
     <div class="mb-2 mt-2">
         <span class="mr-2" > выбрана {{dc_page.sel_page}} (из {{dc_page.num_pages}}) </span>
