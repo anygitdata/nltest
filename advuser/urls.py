@@ -2,7 +2,8 @@ from django.urls import path
 
 from .views import (Index, AddProf_member, AddProf_quest, UpdProf_quest, Success_register_user, 
                     AdvPanel_prof, List_profils, Redir_upd_prof_listProf, Modf_prof_byheader, 
-                    Redir_updprof, Modf_prof_byuser, UpdPassword_user, UpdPsw_byUser, UpdStatus_user)
+                    Redir_updprof, Modf_prof_byuser, UpdPassword_user, UpdPsw_byUser,
+                    Filter_data_profil, UpdStatus_user)
 
 urlpatterns = [
 
@@ -60,7 +61,11 @@ urlpatterns = [
 
 
     # prof_table_format.html; ->  отображение списка структуры менеджеров
-    path('listprofils/', List_profils, name='listprofils'),
+    #path('listprofils/', List_profils, name='listprofils'),
+    path('listprofils/<str:page>/<str:filter>', List_profils, name='listprofils'),
+
+
+    path('filterlvlperm/', Filter_data_profil, name='filterlvlperm'),
 
     path('', Index, name='index'),
 

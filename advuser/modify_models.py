@@ -735,7 +735,8 @@ def get_list_prof_memb(arg_user, arg_list=None, num_rows=5, sel_page=1):
     res_proc = Res_proc();
     res_list = []
 
-    arg_list = arg_list or '30,40,70'      
+    if arg_list is None:
+        arg_list = '30,40,70'      
 
     try:
         user = getUser(arg_user)

@@ -547,7 +547,8 @@ def Modf_prof_byheader(request):
                 dc_cont.update(dict(form=form, res=True))
 
                 return  return_render()
-
+            else:
+                return  redirect_empty(arg_title='Отказ сервера', arg_mes=dict_param.error)
                 
         except Exception as ex:
             return redirect_empty()
@@ -793,7 +794,30 @@ def Success_register_user(request):
 
 
 @login_required
-def List_profils(request):
+def Filter_data_profil(request):
+    """ Перенаправление на другой url
+    Для админПанели рукГрупп
+    Ajax фильт на отображение содержимого
+    по levelperm     
+    """
+    if request.GET:
+        """ структура данных: option.value 
+        значения option.value: lvl_704030  lvl_30  lvl_1020 lvl_70         
+
+        lvl_704030 список рукГрупп, менеджеры
+        lvl_30 список менеджеров
+        lvl_70 только рукГрупп максУровень
+        lvl_1020 список клиенты, гостВход
+        """
+        ...
+
+    else:
+        return redirect_empty(arg_title='Сервер отклонил запрос', arg_mes='Не обработанный запрос')
+
+
+
+@login_required
+def List_profils(request, page, filter):
     """
     url:  listprofils
     name: listprofils
@@ -809,21 +833,11 @@ def List_profils(request):
     if type_status.levelperm < 40:
         return redirect_empty(arg_title='Уровень прав', arg_mes='Нет прав на просмотр данных')
 
-    # Перезапуск, если 'page' in request.GET:
-    if not cache.has_key('List_profils'): 
-        if 'page' in request.GET:
-            sel_page = request.GET['page']
-            cache.set('List_profils', sel_page)
-            return redirect('listprofils')
-
-        else: sel_page = 1
-    else:
-        sel_page = cache.get('List_profils')
-        cache.delete('List_profils')
+    filter_sp = filter.replace('-',',')
 
 
     # изменение 24.07.2020  использование пагинатора
-    res_data_prof = get_list_prof_memb(user, arg_list=None, num_rows=3, sel_page=sel_page)
+    res_data_prof = get_list_prof_memb(user, arg_list=filter_sp, num_rows=3, sel_page=page)
     if res_data_prof is None:
         redirect_empty('Нет данных для просмотра')
 
@@ -839,7 +853,7 @@ def List_profils(request):
         num +=1
 
     cont = dict(
-        rows=res_list, dc_page=dc_page, num_pages=num_pages)
+        rows=res_list, dc_page=dc_page, num_pages=num_pages, filter=filter)
 
     return render(request, 'advuser/prof_table_format.html', cont)
 

@@ -1,6 +1,7 @@
 
 (function ($) {
     // *********** модуль обработки интерактивного интерфейса status_id ************
+    // испльзуется в форме изменений статуса 
 
     /* { limitcon30: 10, limitcon: 50, limitcon40: 5, limitcon70: 1 lvperm: } */
     var limitcon = JSON.parse($('#s_limit').html());

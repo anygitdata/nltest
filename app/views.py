@@ -19,7 +19,7 @@ from django.contrib.auth.decorators import login_required
 """
 def Send_special_message(request): 
 
-    type_requery = request.method
+    #type_requery = request.method
     
     data = request.GET
     if data:

@@ -350,6 +350,8 @@ class UpdStatus_userForm(forms.Form):
             if not dc_cleaned.get('limitcon40'):
                 errors['limitcon40'] = 'Укажите кол-во подключений рукГрупп'
 
+        if dc_cleaned['ageGroup'] > 150:
+            errors['ageGroup'] = 'Значение больше допустимого'
 
         # верификация резкого повышения/понижения levelperm
         num = 1
@@ -512,12 +514,10 @@ class UpdStatus_userForm(forms.Form):
             js_struct = Com_proc_advuser.get_js_struct(user_modf)
             self.clear_data_status(js_struct)  # Удаление всех данных, связанных со status.*
 
-            advData = Com_proc_advuser.get_advData(user_modf)
-            self.clear_data_status(advData) # обнуление данных, связанных со status.*
-            
-            # Обновление данных по status
-            advData.update(dict(status=status_id, status_id=status_id))
-            
+            if levelperm_sel < 30:
+                if js_struct.get('pswcl'):   del js_struct['pswcl']
+                if js_struct.get('logincl'): del js_struct['logincl']
+
 
             # Блок подготовки данных для сохранения изменений в БД
             if levelperm_sel < levelperm_user_base: # Понижение привелигий
@@ -632,7 +632,7 @@ class Templ_profForm(forms.Form):
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) )  
 
     @classmethod
-    def com_modf_quest(cls, arg_head, arg_jsstruct=None)->dict:
+    def com_modf_quest(cls, arg_head, arg_jsstruct=None, new_pswd=False)->dict:
         """ Обобщенная процедура обработки quest
         верификация/изменение 
         pswcl and logincl
@@ -648,13 +648,20 @@ class Templ_profForm(forms.Form):
         if arg_jsstruct:
             js_struct = arg_jsstruct
         
-        user_head = getUser(arg_head)
+        if new_pswd:
+            js_struct['pswcl'] = getPassword_cl()
+            js_struct['logincl'] = getLogin_cl()
 
-        if not js_struct.get('pswcl'):
-                js_struct_head = Com_proc_advuser.get_js_struct(user_head)
-                js_struct['pswcl'] = js_struct_head['pswcl']
-        if not js_struct.get('logincl'):
-                js_struct['logincl'] = getLogin_cl()
+        else:
+            user_head = getUser(arg_head)
+        
+            if Res_proc.FN_get_val_dict(js_struct, 'pswcl') is None:
+                    js_struct_head = Com_proc_advuser.get_js_struct(user_head)
+                    js_struct['pswcl'] = js_struct_head['pswcl']
+            if Res_proc.FN_get_val_dict(js_struct, 'logincl') is None:
+                    js_struct['logincl'] = getLogin_cl()
+
+
 
         return js_struct
 
@@ -894,6 +901,9 @@ class Modf_prof_byHeaderForm(Templ_profForm):
         
         errors = self.com_clean(self.cleaned_data, ('idcomp',))
         
+        if self.cleaned_data['ageGroup'] > 150:
+            errors['ageGroup'] = 'Значение больше допустимого'
+
         if errors:
             raise ValidationError(errors)        
 
@@ -922,7 +932,7 @@ class Modf_prof_byHeaderForm(Templ_profForm):
             js_struct = Com_proc_advuser.get_js_struct(user)            
             js_struct['idcomp'] = cd_dict['idcomp']  # верификация idcomp в clean()
             js_struct = self.com_modf_quest(user_head, js_struct) # верификация pswcl and logincl
-            
+
             cd_dict['js_struct'] = js_struct
 
             # удаление пробелов. Для подстраховки 
@@ -1085,9 +1095,15 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
             # from spr_fields_models.js_data where levelperm = levelperm_sel
             js_struct = spr_fields_models.get_js_struct(levelperm_sel)
 
-            js_struct = self.com_modf_quest(user_head, js_struct) # Заполнение pswcl logincl
-            js_struct['idcomp'] = cd_dict['idcomp']
+            # Для рукГрупп создается новый набор свойств pswcl and logincl
+            if levelperm_sel < 40:
+                js_struct = self.com_modf_quest(user_head, js_struct) # Заполнение pswcl logincl
+            else:
+                # Заполнение pswcl logincl новыми значениями
+                js_struct = self.com_modf_quest(user_head, js_struct, new_pswd=True) 
+                
 
+            js_struct['idcomp'] = cd_dict['idcomp']
 
             cd_dict.update(
                 dict(
