@@ -1037,8 +1037,21 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
         
         super().clean()
         errors = {}
-        
+        self.errors_clean = None
+
         cd_dict = self.cleaned_data
+
+        # верификация привилегий пользователя 
+        user_head = self.user_head
+        user_modf = getUser(cd_dict['username'])
+
+        type_status_head = type_status_user(user_head)
+
+        levelperm_head = type_status_head.levelperm
+        levelperm_modf = cd_dict['status'].levelperm
+        if levelperm_modf == 40 and levelperm_head <= 40:
+            self.errors_clean = 'Ошибка ввода данных: Статус больше допустимого'
+        
 
         # Централизованная верификация ввода данных
         errors = Base_profForm.com_clean(cd_dict, ('email','post','ageGroup','phone',))
@@ -1052,6 +1065,7 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
 
         if password != password1:
             errors['password'] = ValidationError('Пароли не совпадают')
+
 
 
         if errors:
@@ -1071,9 +1085,12 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
         s_err   = 'verify##'
 
         res_proc = Res_proc();
-
+        
         try:            
             
+            if self.errors_clean:  # ошибка из процедуры clean()
+                run_raise(self.errors_clean, showMes=True)
+
             user_head = getUser(arg_user)
             status_head = type_status_user(user_head)
             levelperm_head = status_head.levelperm

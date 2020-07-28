@@ -403,6 +403,8 @@ def AddProf_member(request):
 
     if request.method == 'POST':
         form = AddProf_memberForm(request.POST)
+        form.user_head = user
+
         if form.is_valid():
             res_save = form.save(user)
 
