@@ -58,7 +58,7 @@ def AdvPanel_prof(request):
             id_command = int(form.cleaned_data['id_command'])
             if id_command == 1:  # изменить профиль
                 
-                cache.set('Upd_prof_member', proj_memb)
+                cache.set('Modf_prof_byheader', proj_memb)
                 return redirect('updprofiluser')                                
             elif id_command == 2: # изменение пароля 
 
@@ -520,25 +520,26 @@ def Modf_prof_byheader(request):
     else:  # GET запрос
         try:
             # cache инициализируется из AdvPanel_prof
-            if not cache.has_key('Upd_prof_member'):  
+            if not cache.has_key('Modf_prof_byheader'):  
                 return redirect_empty(arg_mes='Данные устарели')
 
-            username = cache.get('Upd_prof_member')
-            cache.delete('Upd_prof_member')
+            username = cache.get('Modf_prof_byheader')
+            cache.delete('Modf_prof_byheader')
 
+            # Верификация parentuser в качестве рукГруппы  
             res_verify = Com_proc_advuser.verify_yourHead(username, parentuser)
             if not res_verify:
                 if res_verify.mes: # сообщение для отображения 
-                    return redirect_empty(res_verify.mes)
+                    return redirect_empty('Отказ сервера',res_verify.mes)
                 else:
-                    return redirect_empty(arg_title='Отказ сервера', arg_mes='Процедура обработки остановлена на сервере')
+                    return redirect_empty(arg_title='Отказ сервера', arg_mes='Сброс верификации привилегий рукГруппы')
                
-            # Выполняется проверка привилегий parentuser 
+            # Полная верификация привилегий parentuser 
             dict_param = get_dictData_init_Form(parentuser.pk, username)
             if dict_param:
 
                 dict_session = dict(username=username)
-                request.session['Upd_prof_member'] = dict_session  # перенос данных из cache into session
+                request.session['Modf_prof_byheader'] = dict_session  # перенос данных из cache into session
 
                 dict_initial = dict_param.res_dict
                 dict_initial = modf_data_dict(dict_initial)  # сброс значений '' or 'empty'

@@ -350,9 +350,6 @@ class UpdStatus_userForm(forms.Form):
             if not dc_cleaned.get('limitcon40'):
                 errors['limitcon40'] = 'Укажите кол-во подключений рукГрупп'
 
-        if dc_cleaned['ageGroup'] > 150:
-            errors['ageGroup'] = 'Значение больше допустимого'
-
         # верификация резкого повышения/понижения levelperm
         num = 1
         dc_levelperm = {}
@@ -899,7 +896,7 @@ class Modf_prof_byHeaderForm(Templ_profForm):
         super().clean()
         errors = {}
         
-        errors = self.com_clean(self.cleaned_data, ('idcomp',))
+        errors = self.com_clean(self.cleaned_data, ('idcomp','email','post','ageGroup','phone',))
         
         if self.cleaned_data['ageGroup'] > 150:
             errors['ageGroup'] = 'Значение больше допустимого'
@@ -965,7 +962,8 @@ class Modf_prof_byuserForm(Templ_profForm):
         super().clean()
         errors = {}
         
-        errors = self.com_clean(self.cleaned_data, ('idcomp',))
+        # Централизованная верификация ввода 
+        errors = self.com_clean(self.cleaned_data, ('email','post','ageGroup','phone',))
 
 
         if errors:
@@ -1042,14 +1040,15 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
         
         cd_dict = self.cleaned_data
 
-        errors = Base_profForm.com_clean(self.cleaned_data, ('idcomp',))
+        # Централизованная верификация ввода данных
+        errors = Base_profForm.com_clean(cd_dict, ('email','post','ageGroup','phone',))
 
         user_modf = getUser(cd_dict['username'])
         if user_modf:
             errors['username'] = 'Повторный ввод логина'
 
-        password = self.cleaned_data['password']
-        password1 = self.cleaned_data['password1']
+        password = cd_dict['password']
+        password1 = cd_dict['password1']
 
         if password != password1:
             errors['password'] = ValidationError('Пароли не совпадают')

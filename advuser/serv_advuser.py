@@ -176,18 +176,23 @@ class Com_proc_advuser:
         s_mes = '{0} {1}'.format(cls._s_err, arg_except)
         TypeError_system(ErrorRun_impl(s_mes))  # запись в файл app/loggin/*.log
 
+
     #процедура вызова ErrorRun_impl
     @classmethod
     def _run_raise(cls, s_arg, showMes=None, s_err=None):       
         """s_arg строка сообщения исключения из кода
-        s_err базовая строка к которой добавляется дополнительные данные
-            s_err строка для перекрытия шаблона cls._s_err
+           showMes=Falst/True идентификатор отображения в браузере 
+                если True остальные аргументы игнорируются 
+                в браузере отображается информация s_arg
+            ------------------------------------------------------------------
+            s_err базовая строка к которой добавляется дополнительные данные
+            используется для перекрытия шаблона cls._s_err
         """
 
         s_err = s_err or cls._s_err
 
         if showMes:            
-            raise ErrorRun_impl('verify##{0}'.format(s_arg))
+            raise ErrorRun_impl(f'verify##{s_arg}')
         else:
             s_mes = '{0} {1}'.format(s_err, s_arg)
             TypeError_system(ErrorRun_impl(s_mes))  # запись в файл app/loggin/*.log
@@ -533,39 +538,45 @@ class Com_proc_advuser:
     @classmethod
     def verify_yourHead(cls, arg_user, arg_head)->Res_proc:
         """ Анализ, что arg_head является рукГруппы или рукПроекта """
-        s_err = 'verify_yourHead'
+        
         res_proc = Res_proc()
 
         try:
             user = getUser(arg_user)
             user_head = getUser(arg_head)
 
+            if user.username == user_head.username:
+                res_proc.mes = 'Собственный профиль изменяется из панели \"Профиль\"'
+                cls._run_raise(res_proc.mes, True)
+
             if user is None or user_head is None:
-                cls._run_raise(f'{s_err}: arg_user or arg_head не определен')
+                res_proc.mes = 'Пользователь/рукГруппы не определен'
+                cls._run_raise(res_proc.mes, True)
 
             head_typeStatus = type_status_user(user_head)
             if not  head_typeStatus:
-                cls._run_raise(f'{s_err}: статус рукГруппы не определен')
+                res_proc.mes = 'Статус рукГруппы не определен'
+                cls._run_raise(res_proc.mes, True)
 
             if head_typeStatus.levelperm < 40:
                 res_proc.mes = 'Статус пользователя не соответсвует рукГруппы'
-                res_proc.error = 'verify##Статус пользователя не соответсвует рукГруппы'
-                return res_proc
+                cls._run_raise(res_proc.mes, True)
 
             # ------------- конец блока верификации --------------
 
 
             res_parentuser = cls.get_parentuser(user)
             if not res_parentuser:
-                cls._run_raise('')
+                res_proc.mes = 'РукГруппы не определен'
+                cls._run_raise(res_proc.mes, True)
 
             parentuser = res_parentuser.any_str
-            if user_head.username == parentuser:
+            if user_head.username == parentuser:  # верификация, что user_head явлРукГруппы
                 res_proc = True
             else:
-                s_error = f'{user_head.get_full_name()} Не является рукГруппы для {user.username}'
-                res_proc.error = ErrorRun_impl(f'verify##{s_error}')
-                res_proc.mes = s_error
+                res_proc.mes = f'{user_head.get_full_name()} не является рукГруппы для {user.username}'
+                cls._run_raise(res_proc.mes, True)
+                
 
         except Exception  as ex:
             res_proc.error = ex

@@ -569,8 +569,10 @@ testing:
 
 Процедура выборки данных для редактирования профиля
 """
-def get_dictData_init_Form(user, usercl):
-    """ Процедура выборки данных для редактирования профиля """
+def get_dictData_init_Form(user_head, user_modf):
+    """ Процедура выборки данных для редактирования профиля 
+    рукГруппы 
+    """
 
     from .serv_typestatus import type_status_user
     from .serv_advuser import Com_proc_advuser
@@ -590,51 +592,51 @@ def get_dictData_init_Form(user, usercl):
 
     try:
         # ----------------- инициализация базовых параметров -------------------
-        user = getUser(user)
-        usercl = getUser(usercl)
+        user_head = getUser(user_head)
+        user_modf = getUser(user_modf)
 
-        if user is None or usercl is None:
-            run_raise('user or usercl is None')                            
+        if user_head is None or user_modf is None:
+            run_raise('user_head or user_modf is None')                            
 
-        if usercl.is_superuser:
-            run_raise('Профиль суперПользователя не меняется')    
+        if user_modf.is_superuser:
+            run_raise('Профиль суперПользователя не меняется', True)    
             
-        if usercl.username == user.username:
+        if user_modf.username == user_head.username:
             run_raise('Свой профиль изменяется из панели Профиль', True)
 
         # ------------- Конец блока инициализации базовых параметров -------------
 
 
-        type_status_cl = type_status_user(usercl)
-        if not type_status_cl:
-            run_raise('ошибка из advuser.models.Type_status_userExt(usercl')
+        type_status_modf = type_status_user(user_modf)
+        if not type_status_modf:
+            run_raise('ошибка из advuser.models.Type_status_userExt(user_modf')
                 
-        type_status_user = type_status_user(user)
-        if not type_status_user:
-            run_raise('ошибка из advuser.models.Type_status_userExt(user')
+        type_status_head = type_status_user(user_head)
+        if not type_status_head:
+            run_raise('ошибка из advuser.models.Type_status_userExt(user_head')
             
         # Профиль изменяется пользователями со статусом subheader, headerexp, proj-head,
-        if type_status_cl.levelperm in (10,20): 
+        if type_status_modf.levelperm in (10,20): 
             run_raise('Профиль гостевого входа не меняется', True)
 
-        if type_status_cl.levelperm == 100 : 
-            run_raise('Изменение из панели Профиль под учетной записью рукПроекта', True)
+        if type_status_modf.levelperm == 100 : 
+            run_raise('Изменение проводятся из панели Профиль под учетной записью рукПроекта', True)
 
-        if type_status_user.levelperm  < 40:
+        if type_status_head.levelperm  < 40:
             run_raise('Нет прав на изменение профиля', True)
 
         # выборочная верификация прав 
-        levelperm_cl = type_status_cl.levelperm
-        levelperm_user = type_status_user.levelperm
+        levelperm_modf = type_status_modf.levelperm
+        levelperm_head = type_status_head.levelperm
 
-        if levelperm_user == 40 and levelperm_cl > 39:
+        if levelperm_head == 40 and levelperm_modf >= 40:
             run_raise('Нет прав на изменение профиля рукГруппы', True)
-        if levelperm_user == 70 and levelperm_cl > 69:
-            run_raise('Нет прав на изменение профиля супер рукГруппы', True)
+        #if levelperm_head == 70 and levelperm_modf > 69:
+        #    run_raise('Нет прав на изменение профиля супер рукГруппы', True)
         
 
-        # Загрузка данных из user.advuser.advData
-        advData = Com_proc_advuser.get_advData(usercl)
+        # Загрузка данных из user_head.advuser.advData
+        advData = Com_proc_advuser.get_advData(user_modf)
 
         if not advData:
             run_raise('Нет данных для профиля. Обратитесь к рукГруппы',True)
