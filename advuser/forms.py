@@ -1049,9 +1049,9 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
 
         levelperm_head = type_status_head.levelperm
         levelperm_modf = cd_dict['status'].levelperm
-        if levelperm_modf == 40 and levelperm_head <= 40:
+        if (levelperm_head == 40 and levelperm_modf in (40, 70)) or (levelperm_modf == 70 and levelperm_head < 70) :
             self.errors_clean = 'Ошибка ввода данных: Статус больше допустимого'
-        
+
 
         # Централизованная верификация ввода данных
         errors = Base_profForm.com_clean(cd_dict, ('email','post','ageGroup','phone',))
@@ -1134,7 +1134,7 @@ class AddProf_memberForm(Modf_prof_byHeaderForm):
                     )
                 )
 
-            res_proc = serv_add_profil(cd_dict)            
+            res_proc = serv_add_profil(cd_dict)
 
         except Exception as ex:
             res_proc.error = ex;
