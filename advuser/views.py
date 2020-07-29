@@ -796,6 +796,7 @@ def Success_register_user(request):
         return redirect_empty(arg_title='Профиль')
 
 
+# Процедура не законченная. Убрать из-за ненадобности 
 @login_required
 def Filter_data_profil(request):
     """ Перенаправление на другой url
