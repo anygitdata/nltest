@@ -453,6 +453,34 @@ def AddProf_member(request):
 
 # конец контроллеров адмПанели 
 
+
+def com_proc_render(arg_dc_cach:dict):
+    """ Общая процедура render
+    str_cach строка cach 
+    ВСЕ параметры передаются через cach
+    arg_dc_cach передаваемый аргумент через cach
+    ---------------------------------------------
+    Структура arg_dc_cach:
+        request  arg request from procViews
+        dc_cont  dict контент 
+        str_html строка шаблона *.html
+        str_err  строка ошибки вводится в arg_dict_cach
+    """
+
+    dc_cont = arg_dc_cach['dc_cont']
+    request = arg_dc_cach['request']
+
+    str_html = dc_cont['str_html']    
+    dc_err = arg_dc_cach.get('dc_err', None)
+    
+    del dc_cont['str_html']
+
+    if dc_err is not None:
+        dc_cont.update(dc_err)
+
+    return render(request, str_html, dc_cont)
+
+
 """
 Только для рукГруппы
 Вместо RegisterExt_profForm 
@@ -465,43 +493,25 @@ def Modf_prof_byheader(request):
     from .modify_models import get_dictData_init_Form
     from .serv_advuser import Com_proc_advuser
 
-    parentuser = request.user #Com_proc_advuser.get_user_cons(user)
-
-    # Обобщенный dict для обработки return render
-    dc_cont = dict(
-                    parentuser=parentuser.username,
-                    res=False,
-                    error='',
-                    title='Редактор профиля', 
-                    form=None
-                    )
-
-    def return_render(arg_err:str=None):
-        """ Локальная процедура для запуска render:        
-            return render 
-        """
-        nonlocal dc_cont
-
-        if arg_err:
-            dc_cont['error'] = arg_err
-
-        return render(request, 'advuser/regUser_ext.html', dc_cont)
-
+    arg_dc_cach = dict(request = request)
 
     if request.method == 'POST':
         form = Modf_prof_byHeaderForm(request.POST)
 
-        dc_cont['form'] = form
+        if 'Modf_prof_byheader' in request.session:
+            dc_session  = request.session['Modf_prof_byheader']
+            username    = dc_session['username_modf']
+            parentuser  = dc_session['parentuser']
+            
+            dc_session['form'] = form
+            arg_dc_cach['dc_cont'] = dc_session
+
+        else:
+            return redirect_empty(arg_title='Отказ сервера обработки запроса', arg_mes='Данные устарели: пользователь не определен' )
+
 
         if form.is_valid():
-
-            if 'Upd_prof_member' in request.session:
-                username = request.session['Upd_prof_member']['username']
-               
-            else:
-                return redirect_empty(arg_mes='Сервер отклонил обработку: пользователь не определен' )
-                
-
+            
             res_save = form.save(username, parentuser)
             if res_save:
 
@@ -509,49 +519,76 @@ def Modf_prof_byheader(request):
                 dict_cache = dict(username=username, mes=res_save.mes)
 
                 cache.set('Success_register_user', dict_cache)
-                del request.session['Upd_prof_member']
+                del request.session['Modf_prof_byheader']
 
                 return redirect('ver_profil')  # переход на view Success_register_user
 
-            else:
-                return  return_render(res_save.error)
+            else:                
+                arg_dc_cach.update(dict(
+                        dc_err=dict(error=res_save.error) ))
+                return  com_proc_render(arg_dc_cach)
             
         else:
-            return  return_render('Проверьте введенные данные')
+            arg_dc_cach.update(dict(
+                dc_err=dict(error='Проверьте введенные данные') ))
+            return  com_proc_render(arg_dc_cach)
+
 
     else:  # GET запрос
         try:
             # cache инициализируется из AdvPanel_prof
             if not cache.has_key('Modf_prof_byheader'):  
-                return redirect_empty(arg_mes='Данные устарели')
-
+                return redirect_empty(arg_title='Отказ сервера обработки запроса', arg_mes='Данные устарели: пользователь не определен')
+                        
+            parentuser = request.user 
             username = cache.get('Modf_prof_byheader')
+
             cache.delete('Modf_prof_byheader')
 
-            # Верификация parentuser в качестве рукГруппы  
             res_verify = Com_proc_advuser.verify_yourHead(username, parentuser)
             if not res_verify:
                 if res_verify.mes: # сообщение для отображения 
-                    return redirect_empty('Отказ сервера',res_verify.mes)
+                    return redirect_empty(res_verify.mes)
                 else:
-                    return redirect_empty(arg_title='Отказ сервера', arg_mes='Сброс верификации привилегий рукГруппы')
-               
-            # Полная верификация привилегий parentuser 
+                    return redirect_empty(arg_title='Отказ сервера обработки запроса', arg_mes='Процедура обработки остановлена на сервере')
+
+            # Выполняется проверка привилегий parentuser 
             dict_param = get_dictData_init_Form(parentuser.pk, username)
             if dict_param:
+                
+                # Словарь параметров создается один раз и помещается в session
+                # Обработка POST: настройки считываются из dict from session 
+                dc_session = dict(
+                    str_html = 'advuser/regUser_ext.html',
+                    parentuser=parentuser.username,
+                    username_modf = username,
+                    res=False,
+                    #error='',
+                    title='Редактор профиля', 
+                    form=None
+                    )
 
-                dict_session = dict(username=username)
-                request.session['Modf_prof_byheader'] = dict_session  # перенос данных из cache into session
+                request.session['Modf_prof_byheader'] = dc_session
+
+                dc_cont = dc_session.copy()
 
                 dict_initial = dict_param.res_dict
                 dict_initial = modf_data_dict(dict_initial)  # сброс значений '' or 'empty'
 
                 form = Modf_prof_byHeaderForm(initial=dict_initial)
+                
                 dc_cont.update(dict(form=form, res=True))
 
-                return  return_render()
+                # dict для обобщенной процедуры com_proc_render
+                arg_dc_cach.update(dict(
+                                dc_err=dict(error=''),
+                                dc_cont=dc_cont
+                                ))
+
+                return com_proc_render(arg_dc_cach)
+
             else:
-                return  redirect_empty(arg_title='Отказ сервера', arg_mes=dict_param.error)
+                return  redirect_empty(arg_title='Отказ сервера обработки запроса', arg_mes=dict_param.error)
                 
         except Exception as ex:
             return redirect_empty()
