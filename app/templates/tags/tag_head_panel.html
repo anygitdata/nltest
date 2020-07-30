@@ -3,4 +3,8 @@
 
 {% if level > 39 %}
     <a class="nav-item nav-link" href="{% url 'modpanelprof' %}">Админ-Пан</a>
+{% else %}
+    {% if level == 30 %}
+        <a class="nav-item nav-link" href="{% url 'listprof_lvl30' page=1 %}">Админ-Пан</a>
+    {% endif %}
 {% endif %}
