@@ -736,6 +736,9 @@ class Base_profForm(Templ_profForm):
         if not dc_cleaned.get('email') and dc_cleaned.get('sendMes'):
             self.cleaned_data['sendMes'] = 'false'
 
+        if not dc_cleaned.get('phone'):
+            del self.cleaned_data['phone']
+
         if errors:
             raise ValidationError(errors)  
 

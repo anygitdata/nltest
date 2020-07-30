@@ -1,0 +1,70 @@
+{# Шаблон профиля #}
+{# Шаблон для таблОтображения структуры гостВхода для менеджеров #}
+
+{% extends 'layout/base_layout.html' %}
+
+
+{%block header%} <h3 class="text-center"> Список пользователей - участников проекта  </h3> {%endblock%}
+
+{# Заполнение основного контента #}
+{%block main %}
+
+<div class="container">
+    
+    {% for row in rows %}
+
+        <div class="row">
+
+            <div class="w-100 border-bottom border-info" style="font-size:0.8rem">
+                {% if row.levelperm == 10 %}
+                <div class="row col-10" style="font-weight:600;">
+                    <div class="col-5">
+                        <span  font-size:1rem;">{{row.full_name}} </span> <br />
+                    </div>
+                    <div class="col-3">
+                        <span>Логин: {{row.username}}</span>  <br />
+                    </div>
+                    <div class="col-3 ml-1">
+                        <span>Пароль: {{row.pswcl}}</span>   
+                    </div>
+                </div>
+                    
+                {%else%}
+                <div class="row w-100" style="font-size:0.7rem;" >
+                    <div class="col-5">
+                        <span style="font-weight:600; font-size:1rem;">{{row.full_name}} </span> <br />
+                        <div class="pl-1" style="font-size:0.75rem">
+                            IDcomp: {{row.idcomp}}<br />
+                            Статус: {{row.status}} <br />
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <span style="font-weight:600">Логин: {{row.username}}</span>  <br />
+                        email: {{row.email}}<br />
+                        Получать сообщ.: {{row.sendMes}} <br />
+                    </div>
+                    <div class="col-2" style="font-size:0.65rem;">
+                        Телефон: {{row.phone}}<br />
+                        ВозрГр: {{row.ageGroup}}<br />
+                        Пол: {{row.pol}}
+                    </div>
+                </div>
+                {% endif %}
+            </div>    
+        </div>
+
+    {% endfor %}
+
+    <div class="mb-2 mt-2">
+        <span class="mr-2" > выбрана {{dc_page.sel_page}} (из {{dc_page.num_pages}}) </span>
+        {% for page in num_pages %}
+            <a href="?page={{page}}">{{page}}</a>
+        {% endfor %}
+
+        {#{"num_rows": 5, "sel_page": 2, "num_count": 14, "num_pages": 3}#} 
+    </div>
+
+
+</div>
+
+{%endblock main%}

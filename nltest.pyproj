@@ -103,6 +103,7 @@
     <Content Include="advuser\templates\advuser\profile_user.html" />
     <Content Include="advuser\templates\advuser\prof_conf_modf.html" />
     <Content Include="advuser\templates\advuser\prof_quest.html" />
+    <Content Include="advuser\templates\advuser\prof_table_format_short.html" />
     <Content Include="advuser\templates\advuser\prof_table_format_full.html" />
     <Content Include="advuser\templates\advuser\prof_table_format.html" />
     <Content Include="advuser\templates\advuser\regUser.html" />

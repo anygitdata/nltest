@@ -456,10 +456,9 @@ def AddProf_member(request):
 
 def com_proc_render(arg_dc_cach:dict):
     """ Общая процедура render
-    str_cach строка cach 
+    arg_dc_cach содержит ВСЕ параметры для обработки  return render
     ВСЕ параметры передаются через cach
-    arg_dc_cach передаваемый аргумент через cach
-    ---------------------------------------------
+    ---------------------------------------------------------------
     Структура arg_dc_cach:
         request  arg request from procViews
         dc_cont  dict контент 
@@ -833,27 +832,37 @@ def Success_register_user(request):
         return redirect_empty(arg_title='Профиль')
 
 
-# Процедура не законченная. Убрать из-за ненадобности 
-@login_required
-def Filter_data_profil(request):
-    """ Перенаправление на другой url
-    Для админПанели рукГрупп
-    Ajax фильт на отображение содержимого
-    по levelperm     
+def Table_profils_lev30(request, page):
+    """ View для отображения списка профилей в таблФорме 
+    Предназначена для менеджеров
+    url: advuser/listprof_lvl30/<str:page>/<str:filter>
     """
-    if request.GET:
-        """ структура данных: option.value 
-        значения option.value: lvl_704030  lvl_30  lvl_1020 lvl_70         
 
-        lvl_704030 список рукГрупп, менеджеры
-        lvl_30 список менеджеров
-        lvl_70 только рукГрупп максУровень
-        lvl_1020 список клиенты, гостВход
-        """
-        ...
+    from .modify_models import get_list_prof_memb
+    from advuser.serv_typestatus import type_status_user
 
-    else:
-        return redirect_empty(arg_title='Сервер отклонил запрос', arg_mes='Не обработанный запрос')
+    user = request.user
+    type_status = type_status_user(user)
+
+    res_data_prof = get_list_prof_memb(user, arg_list='10,20', num_rows=3, sel_page=page)
+    if res_data_prof is None:
+        redirect_empty('Нет данных для просмотра')
+
+    res_list = res_data_prof.res_list
+    if res_list is None:
+        return redirect_empty(arg_title='Сообщение сервера', arg_mes='Нет данных построения списка')
+
+    dc_page = res_data_prof.res_dict
+    num_pages = []
+    num = 1
+    while num <= dc_page['num_pages']:
+        num_pages.append(num)
+        num +=1
+
+    cont = dict(
+        rows=res_list, dc_page=dc_page, num_pages=num_pages, filter=filter)
+
+    return render(request, 'advuser/prof_table_format_short.html', cont)
 
 
 
