@@ -628,6 +628,39 @@ class Templ_profForm(forms.Form):
                     help_text = 'Важно, для отбора подаваемой информации!',
                     widget=forms.TextInput(attrs={"class":"form-control", "placeholder":"Возраст" }) )  
 
+
+    @classmethod
+    def get_dict_conv_field(cls):
+        """ Конвертрор используемых имен полей, отображаемые в html 
+        --------------------------------------------------------
+        Обработке подлежат только те поля, которые могут иметь значение 'Нет'
+
+        return dict(namefield=КонвОбозначение)
+        """
+
+        res = dict(post='Индекс: Нет', idcomp='IDcomp: Нет', phone='Тел: Нет', email='email: Нет' )
+        return res
+
+
+    @classmethod
+    def conv_dict_for_html(cls, arg_list):
+        """ Сканирование и преобразование arg_dc по ключам совпадающим из Get_dict_conv_field()
+        return convDict from arg_dc
+        """
+
+        dc_templ = cls.get_dict_conv_field()
+        lst_modf = arg_list
+
+        for item in lst_modf:
+            for key in item.keys():
+
+                if key in dc_templ and item[key].lower() == 'нет':
+                    item[key] = dc_templ[key]
+
+        s = json.dumps(lst_modf, ensure_ascii=False)
+        return lst_modf
+
+
     @classmethod
     def com_modf_quest(cls, arg_head, arg_jsstruct=None, new_pswd=False)->dict:
         """ Обобщенная процедура обработки quest

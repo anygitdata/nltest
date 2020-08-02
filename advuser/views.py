@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .serv_advuser import Com_proc_advuser
 from app import PM_run_raise as run_raise, getUser
 from .serv_typestatus import type_status_user
-
+import json
 
 
 def modf_data_dict(arg_dc:dict)->dict:
@@ -41,6 +41,11 @@ def redirect_empty(arg_title=None, arg_mes=None):
 def AdvPanel_prof(request):
     from .serv_typestatus import type_status_user
 
+
+    return redirect('listprof_lvl30', page=1)
+
+    # Настройки на уровне рукГруппы закрыты
+    # РукПроекта не готово к полному сопровождению 
 
     user = request.user
     type_status = type_status_user(user)
@@ -835,16 +840,17 @@ def Success_register_user(request):
 def Table_profils_lev30(request, page):
     """ View для отображения списка профилей в таблФорме 
     Предназначена для менеджеров
-    url: advuser/listprof_lvl30/<str:page>/<str:filter>
+    url: advuser/listprof_lvl30/<str:page>/
     """
 
     from .modify_models import get_list_prof_memb
     from advuser.serv_typestatus import type_status_user
+    from .forms import Templ_profForm
 
     user = request.user
     type_status = type_status_user(user)
 
-    res_data_prof = get_list_prof_memb(user, arg_list='10,20', num_rows=3, sel_page=page)
+    res_data_prof = get_list_prof_memb(user, arg_list='10,20,30', num_rows=5, sel_page=page)
     if res_data_prof is None:
         redirect_empty('Нет данных для просмотра')
 
@@ -853,6 +859,11 @@ def Table_profils_lev30(request, page):
         return redirect_empty(arg_title='Сообщение сервера', arg_mes='Нет данных построения списка')
 
     dc_page = res_data_prof.res_dict
+    #res_list = Templ_profForm.conv_dict_for_html(res_list)  # конвертирование полей, имеющие значение 'Нет'
+    
+    #s = json.dumps(res_list, ensure_ascii=False)
+    
+
     num_pages = []
     num = 1
     while num <= dc_page['num_pages']:
@@ -862,7 +873,7 @@ def Table_profils_lev30(request, page):
     cont = dict(
         rows=res_list, dc_page=dc_page, num_pages=num_pages, filter=filter)
 
-    return render(request, 'advuser/prof_table_format_short.html', cont)
+    return render(request, 'advuser/prof_table_format_short_ext.html', cont)
 
 
 
@@ -878,6 +889,13 @@ def List_profils(request, page, filter):
     from .modify_models import get_list_prof_memb   
     from advuser.serv_typestatus import type_status_user
 
+
+    return redirect('listprof_lvl30', page=page)
+
+    # Полный сервис управления временно не доступен
+    # из-за неподготовленности рукПроекта
+
+
     user = request.user
     type_status = type_status_user(user)
     if type_status.levelperm < 40:
@@ -887,7 +905,7 @@ def List_profils(request, page, filter):
 
 
     # изменение 24.07.2020  использование пагинатора
-    res_data_prof = get_list_prof_memb(user, arg_list=filter_sp, num_rows=3, sel_page=page)
+    res_data_prof = get_list_prof_memb(user, arg_list=filter_sp, num_rows=5, sel_page=page)
     if res_data_prof is None:
         redirect_empty('Нет данных для просмотра')
 
@@ -906,6 +924,8 @@ def List_profils(request, page, filter):
         rows=res_list, dc_page=dc_page, num_pages=num_pages, filter=filter)
 
     return render(request, 'advuser/prof_table_format.html', cont)
+    #return render(request, 'advuser/prof_table_format_short_ext.html', cont)
+    
 
 
 @login_required

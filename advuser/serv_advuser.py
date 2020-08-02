@@ -98,7 +98,7 @@ class Struct_default_AdvUser:
     ageGroup = '-'        
     pswcl = 'Нет'
     logincl = 'Нет'
-    idcomp = 'Не зарегистрирован'
+    idcomp = 'Нет'
         
 
     @classmethod

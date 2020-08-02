@@ -1,0 +1,139 @@
+{# Шаблон профиля #}
+{# Шаблон для таблОтображения структуры гостВхода для менеджеров #}
+
+{% extends 'layout/base_layout.html' %}
+
+
+{%block header%} <h3 class="text-center"> Список пользователей - участников проекта  </h3> {%endblock%}
+
+{# Заполнение основного контента #}
+{%block main %}
+
+<div class="container">
+
+    <style>
+        .cl-font-size {
+            font-size: 0.8rem;
+        }
+
+        .cl-font-weight {
+            font-weight: 600;
+        }
+    </style>
+
+    <h5 class="text-center mb-4">Список участников проекта в структуре руководителя группы</h5>
+
+    {% for row in rows %}
+
+    <div class="row">
+
+        <div class="w-100 border-bottom border-info" style="font-size:0.8rem">
+            {% if row.levelperm == 10 %}
+            <div class="row col-10 cl-font-weight">
+
+                <div class="col-3 mr-3 cl-font-size">{{row.full_name}}</div>
+                <div class="col-3">Логин: {{row.username}}</div>
+                <div class="col-3 ml-5">Пароль: {{row.pswcl}}</div>
+            </div>
+
+            {%else%}
+            <div class="row w-100" style="font-size:0.7rem;">
+                <div class="col-3 cl-font-weight">
+                    <div class="cl-font-size">{{row.full_name}} </div>
+                    <div>Логин: {{row.username}}</div>
+                </div>
+                <div class="col-3 pl-1 cl-font-weight" style="font-size: 0.75rem">
+                    <div>
+                        <div> {%if row.idcomp.lower == 'нет'%}ID комп: Нет{%else%}ID комп: {{row.idcomp}}{%endif%} </div>
+                        <div>{{row.status}}</div>
+                    </div>
+                </div>
+
+                <div class="col-4 pr-1">
+                    <div>{% if row.email.lower == 'нет'%}email: Нет{%else%}{{row.email}}{%endif%}</div>
+                    <div>ПолучСообщ: {{row.sendMes}}</div>
+                </div>
+
+                <div class="col-2 pl-1">
+                    
+                    <div>{%if row.phone.lower == 'нет'%}Тел: Нет {%else%}{{row.phone}}{%endif%}</div>
+                    <div>ВозрГр: {{row.ageGroup}} </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% endfor %}
+
+
+    <div id="btn_url" url="{% url 'listprofils' page='page' filter='filter' %}" class="mb-2 mt-4" style="display: Inline-block">
+        <span class="mr-2"
+              style="font-size:0.8rem;">выбрано {{dc_page.sel_page}}(из {{dc_page.num_pages}})</span>
+        {% for page in num_pages %}
+        {% if dc_page.sel_page == page %}
+        <span id="span_sel" class="bg-info font_family"
+              style="padding:0.2em 0.5em;  color:#ffffff">{{page}}</span>
+
+        {%else%}
+        <button id="btnsel_{{page}}" class="btn_sel mx-1 font_family"
+                style="padding:0 0.4em; font-size:0.85rem;">
+            {{page}}
+        </button>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+
+
+
+</div>
+
+{%endblock main%}
+
+
+{% block scripts %}
+
+{# Загрузка js  #}
+<script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+
+                // Настройка списка фильтра
+                select = $('select');
+                filter = select.attr('filter');
+                select.val(filter);
+
+                $('select').change(function (e) {
+                    var sel = $('select').val();
+
+                    url = $('#btn_url').attr('url');
+                    url = url.replace('page', '1');
+                    url = url.replace('filter', sel);
+
+                    window.location.href = url;
+                });
+
+
+                $('.btn_sel').click(function (e) {
+                    // номер страницы
+                    attr = $(this).attr('id');
+                    index = attr.indexOf('_');
+                    page = attr.substr(index+1);
+
+                    // идентификатор фильтра
+                    var sel = $('select').val();
+                    url = $('#btn_url').attr('url');
+
+                    // обновление url
+                    url = url.replace('page', page);
+                    url = url.replace('filter', sel);
+
+                    window.location.href = url;
+                });
+
+            });
+        })(jQuery);
+</script>
+
+{% endblock %}

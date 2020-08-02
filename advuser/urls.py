@@ -65,7 +65,7 @@ urlpatterns = [
     path('listprofils/<str:page>/<str:filter>', List_profils, name='listprofils'),
 
 
-    path('listprof_lvl30/<str:page>',Table_profils_lev30, name='listprof_lvl30'),
+    path('listprof_lvl30/<str:page>/',Table_profils_lev30, name='listprof_lvl30'),
 
     path('', Index, name='index'),
 
